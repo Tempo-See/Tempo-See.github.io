@@ -479,6 +479,7 @@
       <span>TEMPO</span><span class="dot"></span><span class="zh">节奏</span>
     </a>
     <div class="nav-links">
+      <a href="timeline.html"><span class="zh-only">时间轴</span><span class="en-only">Timeline</span></a>
       <a href="photography.html"><span class="zh-only">摄影</span><span class="en-only">Photography</span></a>
       <a href="days.html" class="is-active"><span class="zh-only">日子</span><span class="en-only">Days</span></a>
       <a href="crochet.html"><span class="zh-only">钩针</span><span class="en-only">Crochet</span></a>
@@ -890,7 +891,6 @@
     if (i % 3 === 1) node.classList.add("delay-1");
     if (i % 3 === 2) node.classList.add("delay-2");
 
-    // ── art block: inline video player OR svg thumbnail link ──
     const artHTML = e.video
       ? `<div class="entry-art is-video" aria-label="${e.titleZh}">
            <video controls preload="metadata" playsinline poster="${e.poster}">
@@ -902,7 +902,6 @@
            <span class="play" aria-hidden="true"></span>
          </a>`;
 
-    // ── note block: long paragraphs (静蕾体) OR single short note ──
     const noteHTML = e.noteLongZh
       ? `<div class="entry-note-long">
            <span class="zh-only">${e.noteLongZh.map(p => `<p>${p}</p>`).join("")}</span>
@@ -910,7 +909,6 @@
          </div>`
       : `<p class="entry-note"><span class="zh-only">${e.noteZh}</span><span class="en-only">${e.noteEn}</span></p>`;
 
-    // ── links block (skip for entries marked noLinks) ──
     const linksHTML = e.noLinks
       ? ``
       : `<div class="entry-links">

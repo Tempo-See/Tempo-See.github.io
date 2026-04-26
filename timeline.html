@@ -1,0 +1,488 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>时间轴 · TEMPO</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Liu+Jian+Mao+Cao&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    --paper:        #F4ECDC;
+    --paper-deep:   #EBE0CB;
+    --paper-soft:   #F9F3E7;
+    --ink:          #1B1714;
+    --ink-soft:     #4B4239;
+    --ink-faint:    #948575;
+    --rule:         #D9CDB6;
+    --accent:       #6E5A3D;
+    --accent-deep:  #4D4027;
+
+    --serif-zh: "Noto Serif SC", "Songti SC", "STSong", serif;
+    --serif-en: "Cormorant Garamond", "Noto Serif SC", serif;
+    --hand:     "Liu Jian Mao Cao", "Noto Serif SC", cursive;
+
+    --max: 1180px;
+    --gut: clamp(20px, 4vw, 56px);
+    --nav-h: 56px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(rgba(60,40,20,0.025) 1px, transparent 1px),
+      radial-gradient(rgba(60,40,20,0.018) 1px, transparent 1px);
+    background-size: 3px 3px, 5px 5px;
+    background-position: 0 0, 1px 2px;
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+
+  a { color: inherit; text-decoration: none; }
+
+  /* ─── nav (consistent with site) ─── */
+  .nav {
+    position: fixed;
+    top: 0; left: 0; right: 0;
+    height: var(--nav-h);
+    display: flex; align-items: center;
+    padding: 0 var(--gut);
+    z-index: 50;
+    transition: transform .45s ease, background-color .45s ease, backdrop-filter .45s ease, border-color .45s ease;
+    border-bottom: 1px solid transparent;
+  }
+  .nav.scrolled {
+    background: rgba(244, 236, 220, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom-color: var(--rule);
+  }
+  .nav.hidden { transform: translateY(-100%); }
+  .nav-inner {
+    width: 100%; max-width: var(--max); margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+  }
+  .brand { font-family: var(--serif-en); font-size: 18px; letter-spacing: 0.32em; font-weight: 400; text-transform: uppercase; color: var(--ink); }
+  .brand .dot { display: inline-block; width: 5px; height: 5px; background: var(--ink); border-radius: 50%; transform: translateY(-2px); margin: 0 8px; }
+  .brand .zh { font-family: var(--serif-zh); letter-spacing: 0.4em; font-size: 14px; color: var(--ink-soft); }
+
+  .nav-links { display: flex; align-items: center; gap: 28px; font-size: 13.5px; color: var(--ink-soft); font-weight: 400; }
+  .nav-links a { position: relative; padding: 4px 0; transition: color .25s ease; }
+  .nav-links a::after { content: ""; position: absolute; left: 0; right: 0; bottom: -2px; height: 1px; background: var(--ink); transform: scaleX(0); transform-origin: left; transition: transform .35s ease; }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-links a.is-active { color: var(--ink); }
+  .nav-links a.is-active::after { transform: scaleX(1); }
+
+  .lang { display: inline-flex; align-items: center; gap: 6px; font-family: var(--serif-en); font-size: 12px; letter-spacing: 0.2em; color: var(--ink-faint); cursor: pointer; user-select: none; border: none; background: none; padding: 4px 8px; }
+  .lang span { transition: color .25s ease; }
+  .lang .active { color: var(--ink); }
+  .lang .sep { color: var(--ink-faint); }
+
+  /* ─── header (slim) ─── */
+  .page-head {
+    max-width: 720px;
+    margin: 0 auto;
+    padding: calc(var(--nav-h) + 80px) var(--gut) 20px;
+    position: relative; z-index: 2;
+  }
+  .page-back {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--serif-en); font-style: italic; font-size: 12px;
+    letter-spacing: 0.2em;
+    color: var(--ink-faint);
+    margin-bottom: 22px;
+  }
+  .page-back:hover { color: var(--ink); }
+  .page-title {
+    font-family: var(--serif-zh);
+    font-weight: 400;
+    font-size: clamp(28px, 3.6vw, 38px);
+    letter-spacing: 0.36em;
+    margin: 0;
+    color: var(--ink);
+  }
+  .page-en {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 14px;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    margin-top: 8px;
+  }
+  .page-tag {
+    margin-top: 18px;
+    font-family: var(--hand);
+    font-size: 16px;
+    color: var(--accent-deep);
+    letter-spacing: 0.05em;
+    line-height: 1.5;
+    max-width: 480px;
+  }
+  [data-lang="en"] .page-tag {
+    font-family: var(--serif-en);
+    font-style: italic;
+  }
+
+  /* ─── timeline ─── */
+  .timeline-wrap {
+    position: relative;
+    max-width: 720px;
+    margin: 0 auto;
+    padding: 60px var(--gut) 140px;
+    z-index: 2;
+  }
+  .timeline-svg {
+    position: absolute;
+    left: 50%; top: 0;
+    width: 80px; height: 100%;
+    transform: translateX(-50%);
+    pointer-events: none;
+    overflow: visible;
+  }
+  .timeline-list {
+    list-style: none;
+    margin: 0; padding: 0;
+    position: relative;
+  }
+  .t-node {
+    position: relative;
+    padding: 26px 0;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    align-items: center;
+    column-gap: 0;
+  }
+  /* ink dot on the line */
+  .t-node::before {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 9px; height: 9px;
+    border-radius: 50%;
+    background: var(--ink);
+    transform: translate(-50%, -50%);
+    z-index: 2;
+    box-shadow: 0 0 0 4px var(--paper);
+  }
+  /* faint bleed under the dot */
+  .t-node::after {
+    content: "";
+    position: absolute;
+    left: 50%; top: 50%;
+    width: 18px; height: 18px;
+    border-radius: 50%;
+    background: var(--ink);
+    opacity: 0.08;
+    transform: translate(-50%, -50%);
+    z-index: 1;
+  }
+  .t-stamp {
+    text-align: right;
+    padding-right: 38px;
+    font-family: var(--serif-en);
+    font-size: 12.5px;
+    letter-spacing: 0.16em;
+    color: var(--ink-faint);
+    white-space: nowrap;
+  }
+  .t-stamp .t-time {
+    display: inline-block;
+    margin-left: 6px;
+    color: var(--ink-soft);
+  }
+  .t-text {
+    padding-left: 38px;
+    font-family: var(--serif-zh);
+    font-size: 14.5px;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+  .t-text .t-bracket {
+    color: var(--ink-faint);
+    font-family: var(--serif-en);
+    font-style: italic;
+    margin: 0 1px;
+  }
+  .t-text a {
+    color: var(--ink);
+    border-bottom: 1px solid var(--rule);
+    padding-bottom: 1px;
+    transition: border-color .25s ease;
+  }
+  .t-text a:hover { border-bottom-color: var(--ink); }
+  .t-text .t-verb {
+    color: var(--ink-faint);
+    margin: 0 3px;
+  }
+  .t-text .t-title {
+    color: var(--ink);
+    font-weight: 400;
+  }
+  [data-lang="en"] .t-text {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 14.5px;
+  }
+
+  /* end marker — small "线开始" */
+  .t-end {
+    text-align: center;
+    margin-top: 48px;
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 11.5px;
+    letter-spacing: 0.32em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .t-end::before {
+    content: "";
+    display: block;
+    width: 1px; height: 60px;
+    background: var(--ink-faint);
+    opacity: 0.4;
+    margin: 0 auto 16px;
+  }
+
+  /* reveal anim */
+  .reveal {
+    opacity: 0; transform: translateY(20px);
+    transition: opacity 1s ease, transform 1s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+
+  /* i18n */
+  [data-lang="zh"] .en-only { display: none; }
+  [data-lang="en"] .zh-only { display: none; }
+  [data-lang="en"] body { font-family: var(--serif-en); }
+  [data-lang="en"] .nav-links a, [data-lang="en"] .page-title {
+    font-family: var(--serif-en);
+  }
+  [data-lang="en"] .page-title { letter-spacing: 0.04em; font-style: italic; }
+  [data-lang="en"] .brand .zh { display: none; }
+
+  /* responsive */
+  @media (max-width: 640px) {
+    .t-node {
+      grid-template-columns: 1fr;
+      padding: 22px 0 22px 48px;
+    }
+    .t-node::before { left: 24px; top: 32px; transform: translate(-50%, 0); }
+    .t-node::after { left: 24px; top: 32px; transform: translate(-50%, 0); }
+    .timeline-svg { left: 24px; transform: none; }
+    .t-stamp {
+      text-align: left;
+      padding-right: 0;
+      padding-bottom: 4px;
+    }
+    .t-text {
+      padding-left: 0;
+    }
+    .nav-links a:not(.lang-wrap):not(.brand) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- nav -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="TEMPO">
+      <span>TEMPO</span><span class="dot"></span><span class="zh">节奏</span>
+    </a>
+    <div class="nav-links">
+      <a href="timeline.html" class="is-active"><span class="zh-only">时间轴</span><span class="en-only">Timeline</span></a>
+      <a href="photography.html"><span class="zh-only">摄影</span><span class="en-only">Photography</span></a>
+      <a href="days.html"><span class="zh-only">日子</span><span class="en-only">Days</span></a>
+      <a href="crochet.html"><span class="zh-only">钩针</span><span class="en-only">Crochet</span></a>
+      <a href="incense.html"><span class="zh-only">熏香</span><span class="en-only">Incense</span></a>
+      <a href="index.html#about"><span class="zh-only">关于</span><span class="en-only">About</span></a>
+      <button class="lang" id="langToggle" aria-label="language">
+        <span data-lang-btn="zh" class="active">中</span>
+        <span class="sep">/</span>
+        <span data-lang-btn="en">EN</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- header -->
+<header class="page-head reveal">
+  <a class="page-back" href="index.html">
+    <span class="zh-only">← 首页</span>
+    <span class="en-only">← Home</span>
+  </a>
+  <h1 class="page-title">
+    <span class="zh-only">时间轴</span>
+    <span class="en-only">Timeline</span>
+  </h1>
+  <div class="page-en">as it goes ·</div>
+  <p class="page-tag">
+    <span class="zh-only">每一次新的更新，都在这条线上多出一个点。</span>
+    <span class="en-only">every new update adds one more dot along the line.</span>
+  </p>
+</header>
+
+<!-- timeline -->
+<main class="timeline-wrap" id="timeline-wrap">
+  <svg class="timeline-svg" id="timeline-svg" preserveAspectRatio="none" aria-hidden="true">
+    <defs>
+      <filter id="line-jitter" x="-20%" y="0" width="140%" height="100%">
+        <feTurbulence type="fractalNoise" baseFrequency="0.018 0.6" numOctaves="2" seed="7" />
+        <feDisplacementMap in="SourceGraphic" scale="3.5" />
+      </filter>
+    </defs>
+    <!-- faint wash behind line for ink-bleed feel -->
+    <path id="t-path-wash" d="" stroke="#1B1714" stroke-width="3.5" fill="none" stroke-linecap="round" filter="url(#line-jitter)" opacity="0.08" />
+    <!-- main ink line -->
+    <path id="t-path" d="" stroke="#1B1714" stroke-width="1.3" fill="none" stroke-linecap="round" filter="url(#line-jitter)" opacity="0.78" />
+  </svg>
+  <ol class="timeline-list" id="timeline-list"></ol>
+  <div class="t-end reveal">
+    <span class="zh-only">线 · 起</span>
+    <span class="en-only">the line begins</span>
+  </div>
+</main>
+
+<script>
+  /* ─────────────────────────────────────────
+     Timeline data — newest first.
+     Format on render:
+       <date> <time>   <section>更新了<title>
+  ───────────────────────────────────────── */
+  const updates = [
+    {
+      date: "2026.04.25", time: "14:30",
+      sectionZh: "微风日记", sectionEn: "Breeze Diary",
+      url: "days-breeze.html",
+      titleZh: "致童年好友的结婚祝福",
+      titleEn: "A wedding wish for a childhood friend",
+    },
+    // — older milestones (site itself) —
+    {
+      date: "2026.04.26", time: "09:14",
+      sectionZh: "时间轴", sectionEn: "Timeline",
+      url: "timeline.html",
+      titleZh: "新建了时间轴",
+      titleEn: "started keeping a timeline",
+    },
+  ];
+  // Sort newest first by date+time
+  updates.sort((a, b) => (b.date + b.time).localeCompare(a.date + a.time));
+
+  /* ── render list ── */
+  const listEl = document.getElementById("timeline-list");
+  updates.forEach((u, i) => {
+    const li = document.createElement("li");
+    li.className = "t-node reveal";
+    li.style.transitionDelay = (i * 0.06) + "s";
+    li.innerHTML = `
+      <div class="t-stamp">
+        <span class="t-date">${u.date}</span>
+        <span class="t-time">${u.time}</span>
+      </div>
+      <div class="t-text">
+        <span class="t-bracket">&lt;</span><a href="${u.url}"><span class="zh-only">${u.sectionZh}</span><span class="en-only">${u.sectionEn}</span></a><span class="t-bracket">&gt;</span><span class="t-verb"><span class="zh-only">更新了</span><span class="en-only"> · </span></span><span class="t-title"><span class="zh-only">${u.titleZh}</span><span class="en-only">${u.titleEn}</span></span>
+      </div>
+    `;
+    listEl.appendChild(li);
+  });
+
+  /* ── build wavy SVG path between nodes ── */
+  const wrap = document.getElementById("timeline-wrap");
+  const svg = document.getElementById("timeline-svg");
+  const path = document.getElementById("t-path");
+  const pathWash = document.getElementById("t-path-wash");
+
+  function buildPath() {
+    const h = wrap.offsetHeight;
+    const w = 80;
+    svg.setAttribute("viewBox", `0 0 ${w} ${h}`);
+    svg.setAttribute("width", w);
+    svg.setAttribute("height", h);
+
+    // Start a little above the first dot, end a little below the last
+    const top = 50;
+    const bot = h - 110;
+    let d = `M ${w/2} ${top}`;
+    const segs = Math.max(6, Math.ceil((bot - top) / 70));
+    const segH = (bot - top) / segs;
+    for (let i = 1; i <= segs; i++) {
+      const y = top + i * segH;
+      // alternating gentle bend, with sin-based variation so it feels organic
+      const a = Math.sin(i * 1.43 + 0.6) * 9;
+      const b = Math.sin(i * 0.91 + 1.7) * 7;
+      const cx1 = w/2 + a;
+      const cx2 = w/2 + b;
+      d += ` C ${cx1.toFixed(2)} ${(y - segH * 0.66).toFixed(2)}, ${cx2.toFixed(2)} ${(y - segH * 0.33).toFixed(2)}, ${(w/2).toFixed(2)} ${y.toFixed(2)}`;
+    }
+    path.setAttribute("d", d);
+    pathWash.setAttribute("d", d);
+  }
+  // Build after render & on resize
+  window.addEventListener("load", buildPath);
+  window.addEventListener("resize", () => { requestAnimationFrame(buildPath); });
+  // also rebuild after fonts settle (height may shift)
+  if (document.fonts && document.fonts.ready) {
+    document.fonts.ready.then(() => requestAnimationFrame(buildPath));
+  }
+  // initial build now (in case load already fired)
+  requestAnimationFrame(buildPath);
+
+  /* ── nav scroll behavior ── */
+  const nav = document.getElementById('nav');
+  let lastY = 0; let ticking = false;
+  function onScroll() {
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 24);
+    if (y > 200 && y > lastY + 4) nav.classList.add('hidden');
+    else if (y < lastY - 2 || y < 80) nav.classList.remove('hidden');
+    lastY = y; ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
+  }, { passive: true });
+
+  /* ── reveal anim ── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.10, rootMargin: "0px 0px -6% 0px" });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ── language toggle ── */
+  const langBtn = document.getElementById('langToggle');
+  const html = document.documentElement;
+  langBtn.addEventListener('click', () => {
+    const cur = html.getAttribute('data-lang') === 'zh' ? 'en' : 'zh';
+    html.setAttribute('data-lang', cur);
+    html.setAttribute('lang', cur === 'zh' ? 'zh-CN' : 'en');
+    langBtn.querySelectorAll('span[data-lang-btn]').forEach(s => {
+      s.classList.toggle('active', s.dataset.langBtn === cur);
+    });
+    requestAnimationFrame(buildPath);
+  });
+</script>
+
+</body>
+</html>
