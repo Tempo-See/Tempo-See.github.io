@@ -1,0 +1,987 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>熏香 · TEMPO</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Ma+Shan+Zheng&family=Liu+Jian+Mao+Cao&family=Long+Cang&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* paper & ink — incense variant: 米白偏暖 */
+    --paper:        #F1E8D2;
+    --paper-deep:   #E5D9BC;
+    --paper-soft:   #F7EFDB;
+    --paper-warm:   #EBDFC1;
+    --ink:          #1B1714;
+    --ink-soft:     #4B4239;
+    --ink-faint:    #948575;
+    --rule:         #CFC1A2;
+
+    /* incense accent: 米白 + 安雷吐茶色 */
+    --accent:       #7A4F31;       /* 茶褐 */
+    --accent-deep:  #5A3622;
+    --accent-wash:  #C9A079;
+
+    --seal-red:     #9B3023;
+    --seal-red-deep:#7C2419;
+
+    --serif-zh: "Noto Serif SC", "Songti SC", "STSong", serif;
+    --serif-en: "Cormorant Garamond", "Noto Serif SC", serif;
+    --brush:    "Ma Shan Zheng", "Kaiti SC", "STKaiti", serif;
+    --hand:     "Long Cang", "Liu Jian Mao Cao", cursive;
+
+    --max:  1180px;
+    --gut:  clamp(20px, 4vw, 56px);
+    --nav-h: 56px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(rgba(60,40,20,0.025) 1px, transparent 1px),
+      radial-gradient(rgba(60,40,20,0.018) 1px, transparent 1px);
+    background-size: 3px 3px, 5px 5px;
+    background-position: 0 0, 1px 2px;
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ───────────── nav (same as other pages) ───────────── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: var(--nav-h);
+    display: flex; align-items: center;
+    padding: 0 var(--gut);
+    z-index: 50;
+    transition: transform .45s ease, background-color .45s ease, backdrop-filter .45s ease, border-color .45s ease;
+    border-bottom: 1px solid transparent;
+  }
+  .nav.scrolled {
+    background: rgba(241, 232, 210, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom-color: var(--rule);
+  }
+  .nav.hidden { transform: translateY(-100%); }
+  .nav-inner {
+    width: 100%; max-width: var(--max); margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+  }
+  .brand {
+    font-family: var(--serif-en);
+    font-size: 18px; letter-spacing: 0.32em;
+    font-weight: 400; text-transform: uppercase;
+    color: var(--ink);
+  }
+  .brand .dot { display: inline-block; width: 5px; height: 5px;
+    background: var(--ink); border-radius: 50%;
+    transform: translateY(-2px); margin: 0 8px; }
+  .brand .zh { font-family: var(--serif-zh); letter-spacing: 0.4em; font-size: 14px; color: var(--ink-soft); }
+  .nav-links { display: flex; align-items: center; gap: 28px;
+    font-size: 13.5px; color: var(--ink-soft); font-weight: 400; }
+  .nav-links a { position: relative; padding: 4px 0; transition: color .25s ease; }
+  .nav-links a::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -2px;
+    height: 1px; background: var(--ink);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .35s ease;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-links a.is-active { color: var(--ink); }
+  .nav-links a.is-active::after { transform: scaleX(1); background: var(--accent); }
+
+  .lang {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--serif-en); font-size: 12px;
+    letter-spacing: 0.2em; color: var(--ink-faint);
+    cursor: pointer; user-select: none;
+    border: none; background: none; padding: 4px 8px;
+  }
+  .lang span { transition: color .25s ease; }
+  .lang .active { color: var(--ink); }
+  .lang .sep { color: var(--ink-faint); }
+
+  /* ───────────── breadcrumb ───────────── */
+  .crumb {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: calc(var(--nav-h) + 32px) var(--gut) 0;
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--serif-en);
+    font-size: 11.5px;
+    letter-spacing: 0.4em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .crumb a { transition: color .25s ease; }
+  .crumb a:hover { color: var(--ink); }
+  .crumb .sep { width: 18px; height: 1px; background: var(--ink-faint); display: inline-block; }
+
+  /* ───────────── hero ───────────── */
+  .hero {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 6vh var(--gut) 12vh;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+  }
+  .hero-art {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    max-height: 78vh;
+    overflow: hidden;
+    background: var(--paper-soft);
+  }
+  .hero-art svg.wash { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .section-mark {
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.5em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .hero-title {
+    font-family: var(--brush);
+    font-weight: 400;
+    font-size: clamp(72px, 11vw, 132px);
+    line-height: 1;
+    letter-spacing: 0.15em;
+    margin: 0 0 12px;
+    color: var(--ink);
+  }
+  .hero-title-en {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(20px, 2vw, 26px);
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+    margin-bottom: 36px;
+  }
+  .hero-divider { width: 38px; height: 1px; background: var(--accent); opacity: 0.6; margin: 0 0 28px; }
+  .hero-prose {
+    font-size: clamp(15px, 1.15vw, 17px);
+    line-height: 2.1;
+    color: var(--ink-soft);
+    max-width: 38ch;
+    font-weight: 300;
+  }
+  .hero-prose p + p { margin-top: 1.2em; }
+  .hero-prose .accent { font-family: var(--hand); font-size: 1.4em; color: var(--accent); line-height: 1.5; }
+
+  /* ───────────── catalog ───────────── */
+  .catalog-head {
+    max-width: 980px;
+    margin: 6vh auto 4vh;
+    padding: 0 var(--gut);
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 24px;
+  }
+  .catalog-head .label {
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    font-size: 18px;
+    letter-spacing: 0.5em;
+    margin: 0;
+  }
+  .catalog-head .meta {
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.4em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  .catalog {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 var(--gut) 16vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(40px, 5vw, 80px);
+    row-gap: clamp(70px, 9vh, 110px);
+  }
+  /* slight staircase like crochet */
+  .item:nth-child(even) { margin-top: clamp(30px, 6vh, 70px); }
+
+  .item {
+    cursor: pointer;
+    background: var(--paper-soft);
+    padding: 36px clamp(28px, 4vw, 56px) 32px;
+    transition: transform .55s cubic-bezier(.2,.7,.2,1), box-shadow .55s ease;
+    box-shadow: 0 1px 0 var(--rule);
+    border-bottom: 1px solid transparent;
+    position: relative;
+  }
+  .item:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 18px 40px -22px rgba(27,23,20,0.20), 0 1px 0 var(--rule);
+  }
+
+  /* "image" composition: vertical brush name + seal + 店家 + product type */
+  .nameblock {
+    min-height: 220px;
+    position: relative;
+    display: grid;
+    grid-template-columns: auto 1fr;
+    gap: 0;
+    padding-bottom: 24px;
+  }
+  .nameblock .brushname {
+    font-family: var(--brush);
+    font-weight: 400;
+    font-size: clamp(34px, 3.6vw, 44px);
+    writing-mode: vertical-rl;
+    line-height: 1.15;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+    grid-column: 2;
+    justify-self: end;
+    margin-right: 6px;
+  }
+  .nameblock .left {
+    grid-column: 1;
+    align-self: end;
+    display: flex; flex-direction: column;
+    gap: 6px;
+    padding-bottom: 4px;
+  }
+  .seal {
+    position: relative;
+    width: 50px; height: 50px;
+    background: var(--seal-red);
+    color: var(--paper-soft);
+    font-family: var(--brush);
+    display: grid;
+    place-items: center;
+    overflow: hidden;
+  }
+  .seal-2 { /* 2 chars: 1x2 vertical or single line */
+    display: grid;
+    grid-template-rows: 1fr 1fr;
+    line-height: 1;
+    padding: 5px 0;
+  }
+  .seal-2 span { text-align: center; font-size: 17px; letter-spacing: 0; }
+  .seal-4 { /* 4 chars: 2x2 grid */
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    grid-template-rows: 1fr 1fr;
+    line-height: 1;
+    padding: 4px 4px;
+  }
+  .seal-4 span { text-align: center; font-size: 14px; letter-spacing: 0; }
+  /* paper-bleed effect on seal edges */
+  .seal::after {
+    content: "";
+    position: absolute; inset: 0;
+    background-image:
+      radial-gradient(circle at 12% 88%, rgba(241,232,210,0.6) 0 1.5px, transparent 2px),
+      radial-gradient(circle at 88% 22%, rgba(241,232,210,0.5) 0 1px, transparent 1.5px),
+      radial-gradient(circle at 30% 30%, rgba(241,232,210,0.35) 0 1px, transparent 2px),
+      radial-gradient(circle at 70% 70%, rgba(241,232,210,0.3) 0 1px, transparent 2px);
+    pointer-events: none;
+  }
+  .vendor {
+    font-family: var(--serif-zh);
+    font-size: 11.5px;
+    letter-spacing: 0.25em;
+    color: var(--ink-soft);
+    margin-top: 2px;
+  }
+  .ptype {
+    font-family: var(--serif-zh);
+    font-size: 11.5px;
+    letter-spacing: 0.4em;
+    color: var(--ink-faint);
+  }
+
+  .item-rule {
+    height: 1px;
+    background: var(--rule);
+    margin: 8px 0 18px;
+  }
+
+  .composition {
+    font-family: var(--serif-zh);
+    font-size: 12.5px;
+    letter-spacing: 0.18em;
+    color: var(--ink-soft);
+    line-height: 1.9;
+    text-align: center;
+    margin-bottom: 22px;
+  }
+  .composition .lbl {
+    color: var(--ink-faint);
+    margin-right: 8px;
+  }
+  .impression {
+    text-align: center;
+    font-family: var(--serif-zh);
+    font-size: 16px;
+    font-weight: 400;
+    letter-spacing: 0.45em;
+    color: var(--accent-deep);
+  }
+  .impression .dot {
+    color: var(--ink-faint);
+    margin: 0 0.3em;
+    font-weight: 300;
+  }
+
+  /* ───────────── reveal anim ───────────── */
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal.delay-1 { transition-delay: .12s; }
+  .reveal.delay-2 { transition-delay: .24s; }
+  .reveal.delay-3 { transition-delay: .36s; }
+
+  /* ───────────── modal / detail (free vertical layout) ───────────── */
+  .modal {
+    position: fixed; inset: 0;
+    z-index: 100;
+    display: none;
+    background: rgba(27, 23, 20, 0.18);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    overflow-y: auto;
+    padding: clamp(20px, 4vw, 60px);
+  }
+  .modal.open { display: block; animation: fade .5s ease; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .modal-shell {
+    max-width: 880px;
+    margin: 0 auto;
+    background: var(--paper-soft);
+    position: relative;
+    box-shadow: 0 24px 80px -20px rgba(27,23,20,0.22), 0 8px 24px -8px rgba(27,23,20,0.10);
+    animation: rise .65s cubic-bezier(.2,.7,.2,1);
+    padding: clamp(40px, 6vw, 80px) clamp(28px, 5vw, 80px) clamp(60px, 8vh, 100px);
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-close {
+    position: fixed;
+    top: clamp(28px, 4.5vw, 70px);
+    right: clamp(28px, 4.5vw, 70px);
+    z-index: 110;
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background .25s ease, transform .25s ease, border-color .25s ease, color .25s ease;
+    color: var(--ink);
+    font-family: var(--serif-en);
+    font-size: 18px;
+    line-height: 1;
+  }
+  .modal-close:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); transform: rotate(90deg); }
+
+  /* detail layout building blocks (free / asymmetric) */
+  .d-row {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: clamp(20px, 4vw, 56px);
+    align-items: start;
+    margin-bottom: 12vh;
+  }
+  .d-row.right-narrow  { grid-template-columns: 1.4fr 1fr; }
+  .d-row.left-narrow   { grid-template-columns: 1fr 1.4fr; }
+  .d-row.single        { grid-template-columns: 1fr; }
+  .d-photo {
+    aspect-ratio: 4 / 5;
+    overflow: hidden;
+    background: var(--paper-warm);
+  }
+  .d-photo.wide { aspect-ratio: 5 / 3; }
+  .d-photo svg { width: 100%; height: 100%; display: block; }
+
+  /* big calligraphic title block in detail */
+  .d-titleblock {
+    position: relative;
+    padding: 8px 0;
+    display: flex;
+    align-items: flex-end;
+    gap: 18px;
+    min-height: 280px;
+  }
+  .d-titleblock .brushname {
+    font-family: var(--brush);
+    font-weight: 400;
+    font-size: clamp(56px, 7vw, 88px);
+    writing-mode: vertical-rl;
+    line-height: 1.1;
+    letter-spacing: 0.1em;
+    color: var(--ink);
+  }
+  .d-titleblock .stack {
+    display: flex; flex-direction: column;
+    gap: 8px;
+    padding-bottom: 8px;
+  }
+  .d-titleblock .ptype-big {
+    font-family: var(--serif-zh);
+    font-size: 14px;
+    letter-spacing: 0.5em;
+    color: var(--ink-soft);
+  }
+
+  /* ancient recipe — vertical right-to-left */
+  .recipe {
+    writing-mode: vertical-rl;
+    font-family: var(--serif-zh);
+    font-weight: 400;
+    font-size: 14px;
+    letter-spacing: 0.1em;
+    line-height: 2.1;
+    color: var(--ink-soft);
+    max-height: 320px;
+    padding: 4px 6px;
+  }
+  .recipe .source {
+    color: var(--ink-faint);
+    font-size: 12.5px;
+    margin-top: 1.5em;
+  }
+
+  /* personal review — each line centered, line-by-line */
+  .review {
+    font-family: var(--serif-zh);
+    font-size: 16px;
+    line-height: 2.4;
+    color: var(--ink);
+    text-align: center;
+    max-width: 36ch;
+    margin: 0 auto;
+    font-weight: 400;
+  }
+  .review .line { display: block; }
+  .review .pull {
+    font-family: var(--hand);
+    font-size: 1.5em;
+    color: var(--accent);
+    line-height: 1.4;
+    margin: 0.6em 0;
+  }
+
+  /* small caption / temperature info */
+  .d-data {
+    text-align: center;
+    font-family: var(--serif-zh);
+    font-size: 13px;
+    letter-spacing: 0.3em;
+    color: var(--ink-soft);
+    margin-top: 10vh;
+    padding-top: 24px;
+    border-top: 1px solid var(--rule);
+  }
+  .d-data .lbl { color: var(--ink-faint); margin-right: 12px; }
+  .d-data .row + .row { margin-top: 6px; }
+
+  /* ───────────── i18n ───────────── */
+  [data-lang="zh"] .en-only { display: none; }
+  [data-lang="en"] .zh-only { display: none; }
+  [data-lang="en"] body { font-family: var(--serif-en); }
+  [data-lang="en"] .nav-links a, [data-lang="en"] .hero-prose, [data-lang="en"] .review {
+    font-family: var(--serif-en); letter-spacing: 0.02em;
+  }
+  [data-lang="en"] .hero-title { display: none; }
+  [data-lang="en"] .hero-title-en { font-style: normal; font-weight: 300; }
+  [data-lang="en"] .catalog-head .label { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
+  [data-lang="en"] .brand .zh { display: none; }
+  [data-lang="en"] .brushname,
+  [data-lang="en"] .seal,
+  [data-lang="en"] .vendor,
+  [data-lang="en"] .ptype,
+  [data-lang="en"] .composition,
+  [data-lang="en"] .impression,
+  [data-lang="en"] .recipe { /* keep Chinese identity for these */
+    font-family: revert;
+  }
+
+  /* ───────────── responsive ───────────── */
+  @media (max-width: 880px) {
+    .hero { grid-template-columns: 1fr; padding-top: 0; gap: 36px; }
+    .hero-art { aspect-ratio: 4 / 4; max-height: 52vh; }
+    .catalog { grid-template-columns: 1fr; row-gap: 56px; }
+    .item:nth-child(even) { margin-top: 0; }
+    .nav-links a:not(.lang-wrap) { display: none; }
+    .d-row, .d-row.right-narrow, .d-row.left-narrow { grid-template-columns: 1fr; }
+    .recipe { writing-mode: horizontal-tb; max-height: none; }
+    .modal-shell { padding: 32px 22px 60px; }
+  }
+</style>
+</head>
+<body>
+
+<!-- shared SVG defs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="noise-soft" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" />
+      <feColorMatrix values="0 0 0 0 0.10  0 0 0 0 0.09  0 0 0 0 0.08  0 0 0 0.05 0" />
+      <feComposite in2="SourceGraphic" operator="in" />
+    </filter>
+    <filter id="bleed-light" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="5" />
+      <feDisplacementMap in="SourceGraphic" scale="9" />
+    </filter>
+  </defs>
+</svg>
+
+<!-- ──────────── nav ──────────── -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="TEMPO">
+      <span>TEMPO</span><span class="dot"></span><span class="zh">节奏</span>
+    </a>
+    <div class="nav-links">
+      <a href="photography.html"><span class="zh-only">摄影</span><span class="en-only">Photography</span></a>
+      <a href="days.html"><span class="zh-only">日子</span><span class="en-only">Days</span></a>
+      <a href="crochet.html"><span class="zh-only">钩针</span><span class="en-only">Crochet</span></a>
+      <a href="incense.html" class="is-active"><span class="zh-only">熏香</span><span class="en-only">Incense</span></a>
+      <a href="index.html#about"><span class="zh-only">关于</span><span class="en-only">About</span></a>
+      <button class="lang" id="langToggle" aria-label="language">
+        <span data-lang-btn="zh" class="active">中</span>
+        <span class="sep">/</span>
+        <span data-lang-btn="en">EN</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ──────────── breadcrumb ──────────── -->
+<div class="crumb reveal">
+  <a href="index.html">TEMPO</a>
+  <span class="sep"></span>
+  <span><span class="zh-only">熏 香</span><span class="en-only">Incense</span></span>
+</div>
+
+<!-- ──────────── hero ──────────── -->
+<header class="hero">
+  <div class="hero-art reveal">
+    <!-- ink-wash of an incense burner with rising smoke -->
+    <svg class="wash" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <radialGradient id="g-air" cx="50%" cy="60%" r="60%">
+          <stop offset="0%" stop-color="#F7EFDB"/>
+          <stop offset="100%" stop-color="#E5D9BC"/>
+        </radialGradient>
+      </defs>
+      <rect width="400" height="500" fill="url(#g-air)"/>
+
+      <!-- rising smoke wisps -->
+      <g stroke="#5A4F3F" stroke-width="0.9" fill="none" opacity="0.5" stroke-linecap="round">
+        <path d="M 200 290 q -8 -30 4 -54 q 12 -30 -2 -56 q -14 -30 6 -56 q 16 -28 -4 -50"/>
+        <path d="M 215 295 q  8 -28 -2 -52 q -10 -28 6 -56 q 16 -28 -4 -52"/>
+        <path d="M 188 295 q -10 -26  2 -48 q 14 -26 -4 -52 q -16 -26 4 -48"/>
+      </g>
+
+      <!-- incense burner silhouette in ink -->
+      <g filter="url(#bleed-light)">
+        <ellipse cx="200" cy="320" rx="78" ry="14" fill="#3a2f24" opacity="0.7"/>
+        <path d="M 130 320
+                 q 6 60 70 60
+                 q 64 0 70 -60 Z" fill="#2B241B" opacity="0.85"/>
+        <ellipse cx="200" cy="320" rx="60" ry="9" fill="#7A4F31" opacity="0.6"/>
+      </g>
+      <!-- base -->
+      <rect x="160" y="392" width="80" height="6" fill="#3a2f24" opacity="0.6"/>
+
+      <!-- subtle horizon line / table edge -->
+      <line x1="0" y1="398" x2="400" y2="398" stroke="#5A4F3F" stroke-width="0.7" opacity="0.35"/>
+
+      <rect width="400" height="500" filter="url(#noise-soft)" opacity="0.55"/>
+    </svg>
+  </div>
+
+  <div class="hero-text">
+    <div class="section-mark reveal delay-1">IV · Incense</div>
+    <h1 class="hero-title reveal delay-1 zh-only">熏&nbsp;香</h1>
+    <div class="hero-title-en reveal delay-2">Incense</div>
+    <div class="hero-divider reveal delay-2"></div>
+    <div class="hero-prose reveal delay-3">
+      <div class="zh-only">
+        <p>香是看不见的，<br/>但它会让一个空间慢下来。</p>
+        <p>我把试过的香记在这里——<br/>不为评判，<br/>只为记得它们路过的样子。</p>
+        <p class="accent">闻香识季，<br/>识人，<br/>也识自己。</p>
+      </div>
+      <div class="en-only">
+        <p>Incense is invisible,<br/>but it slows the room.</p>
+        <p>I keep notes here on the ones I've burned—<br/>not to judge,<br/>just to remember how they passed through.</p>
+        <p class="accent">Read the season by scent,<br/>read others, read yourself.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ──────────── catalog ──────────── -->
+<section>
+  <div class="catalog-head">
+    <h2 class="label reveal">
+      <span class="zh-only">香&nbsp;&nbsp;录</span>
+      <span class="en-only">Incense Notes</span>
+    </h2>
+    <div class="meta reveal delay-1">— 06 —</div>
+  </div>
+
+  <div class="catalog" id="catalog"></div>
+</section>
+
+<!-- ──────────── modal ──────────── -->
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <button class="modal-close" id="modalClose" aria-label="close">×</button>
+  <div class="modal-shell" id="modalShell"></div>
+</div>
+
+<script>
+  /* ───── data ───── */
+  const items = [
+    {
+      id: "elih",
+      name: "鹅梨帐中香",
+      vendor: "岭南香社",
+      vendorChars: ["岭","南","香","社"],
+      ptype: "香粉",
+      ptypeEn: "powder",
+      composition: ["沉香","檀香","鹅梨"],
+      impressions: ["甜润","单薄"],
+      temp: ["熏香温度 · 110 至 130", "4 小时后扩香明显减弱"],
+      recipe: `沉香末一两，檀香末一钱，鹅梨十枚。右以鹅梨刻去瓤核，如瓮子状，入香末，仍将梨顶签盖，蒸三溜，去梨皮，研和令匀，久窨可热。`,
+      recipeSource: "陈氏香谱",
+      review: [
+        "甜润的气息似乎突然间就弥漫开来了",
+        "未见预想中的凉意，也不至于腻人",
+        "扩香力道恰到好处",
+        "床帏被甜香轻轻地包裹着",
+        { pull: "只是熏后空气中残留的甜味略显单薄" },
+        "有些遗憾",
+      ],
+      tone: "warm",
+      seedA: 1, seedB: 11
+    },
+    {
+      id: "qinglin",
+      name: "青麟髓",
+      vendor: "狗哥",
+      vendorChars: ["狗","哥"],
+      ptype: "香丸",
+      ptypeEn: "ball",
+      composition: ["药香","梅子","花瓣"],
+      impressions: ["清新","上瘾"],
+      temp: ["熏香温度 · 120 扩香明显", "130 药香强烈"],
+      recipe: `原是明代徽州制墨家方于鲁所创：药墨。后改良为香。`,
+      recipeSource: "",
+      review: [
+        "香丸观形雅致，碎花瓣镶嵌在丸中",
+        "拙朴天然之意自显",
+        "香意清新，未有想象般张扬霸道",
+        "低温下温润浅淡",
+        "推门入室之瞬，清凉之意扑面而来",
+        "药香合了梅子味儿",
+        { pull: "升温后更加药香浓郁，越熏越上瘾" },
+      ],
+      tone: "rose",
+      seedA: 2, seedB: 13
+    },
+    {
+      id: "longxian",
+      name: "龙涎",
+      vendor: "岭南香社",
+      vendorChars: ["岭","南","香","社"],
+      ptype: "香粉",
+      ptypeEn: "powder",
+      composition: ["龙涎","沉木"],
+      impressions: ["温润","包裹"],
+      temp: ["熏香温度 · 130 香气充盈"],
+      recipe: `龙涎出大食国。其龙多蟠伏于洋中之大石，卧而吐涎，涎浮水面，人见乌林上异禽翔集，众鱼游泳争嗽之，则曳取焉。如五灵脂而光泽，能发众香。`,
+      recipeSource: "香谱",
+      review: [
+        "初如牛乳，朦胧轻柔",
+        "升温时奶甜渐浓，夹杂咸味",
+        "隐约有沉木微酸",
+        { pull: "持续升温时，温暖的油脂感显现" },
+        "气质圆润，木质调内敛",
+        "推门而入的瞬间，是温润而令人安心的",
+        "满室龙涎，温润如玉",
+      ],
+      tone: "milk",
+      seedA: 3, seedB: 17
+    },
+    {
+      id: "meigui",
+      name: "玫瑰",
+      vendor: "岭南香社",
+      vendorChars: ["岭","南","香","社"],
+      ptype: "香丸",
+      ptypeEn: "ball",
+      composition: ["玫瑰","沉香"],
+      impressions: ["慵懒","馥郁"],
+      temp: ["熏香温度 · 130", "6 小时后味道极淡"],
+      recipe: `别有国香收不得，诗人熏入水沉中。`,
+      recipeSource: "红玫瑰",
+      review: [
+        "升温即见幽香，存在感强烈",
+        "微带苦意",
+        "推门入室时，方知误判",
+        "清甜蜜意悄然弥散房中",
+        "褪去了咄咄逼人的馥郁",
+        { pull: "只剩下恰到好处的缱绻" },
+        "半雨半晴的天色里",
+        "雨声风声穿窗而过",
+        "此时只想拥书而坐",
+        "氛围温柔慵懒",
+      ],
+      tone: "rose",
+      seedA: 4, seedB: 19
+    },
+    {
+      id: "chentan",
+      name: "沉檀",
+      vendor: "老山香堂",
+      vendorChars: ["老","山","香","堂"],
+      ptype: "香粉",
+      ptypeEn: "powder",
+      composition: ["沉香","老山檀"],
+      impressions: ["沉静","厚重"],
+      temp: ["熏香温度 · 110 木质回甘", "130 厚重深远"],
+      recipe: `沉檀相和，木气交融。一为水沉，一为檀心，可助清神。`,
+      recipeSource: "占位",
+      review: [
+        "起香缓慢，几乎要怀疑炉子坏了",
+        "等过了三炷茶的功夫",
+        "才像有人轻轻把门推开",
+        { pull: "木气进来，先是檀，后是沉" },
+        "夜里写字时最适合",
+        "心一沉下来，字就稳了",
+      ],
+      tone: "wood",
+      seedA: 5, seedB: 23
+    },
+    {
+      id: "xuezhong",
+      name: "雪中春信",
+      vendor: "香事斋",
+      vendorChars: ["香","事","斋"],
+      ptype: "香丸",
+      ptypeEn: "ball",
+      composition: ["梅","龙脑","白檀"],
+      impressions: ["清冷","一线"],
+      temp: ["熏香温度 · 120 梅意初显", "140 冷冽不绝"],
+      recipe: `雪中春信，宋人最爱。取梅花含露，以龙脑相佐，作丸窨之。`,
+      recipeSource: "占位",
+      review: [
+        "名字比香味更先一步到达",
+        "起香薄，像窗缝里透进来一点风",
+        "三十分钟之后",
+        { pull: "梅意才慢慢成形" },
+        "不浓，但收不住",
+        "适合一个人的早春",
+      ],
+      tone: "cold",
+      seedA: 6, seedB: 29
+    },
+  ];
+
+  /* ───── render seal ───── */
+  function sealHtml(chars) {
+    const cls = chars.length === 4 ? "seal-4" : "seal-2";
+    return `<div class="seal ${cls}">${chars.map(c => `<span>${c}</span>`).join("")}</div>`;
+  }
+
+  /* ───── placeholder photo (incense-toned) ───── */
+  const tones = {
+    warm:  { bg: "#E8DCBF", fg: "#A56A4A" },
+    rose:  { bg: "#E6D5C8", fg: "#9B3023" },
+    milk:  { bg: "#EFE6D2", fg: "#C9A079" },
+    wood:  { bg: "#DDD0B6", fg: "#5A3622" },
+    cold:  { bg: "#E0DCC9", fg: "#7A8367" },
+  };
+  function placeholderSVG(seed, tone, w=600, h=750) {
+    const t = tones[tone] || tones.warm;
+    return `
+      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="n-${seed}"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="${seed}"/>
+            <feColorMatrix values="0 0 0 0 0.10  0 0 0 0 0.09  0 0 0 0 0.08  0 0 0 0.05 0"/>
+            <feComposite in2="SourceGraphic" operator="in"/></filter>
+          <filter id="b-${seed}" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="${seed*3}"/>
+            <feDisplacementMap in="SourceGraphic" scale="12"/></filter>
+          <radialGradient id="g-${seed}" cx="${40+seed*4}%" cy="${50+seed*2}%" r="70%">
+            <stop offset="0%" stop-color="${t.fg}" stop-opacity="0.78"/>
+            <stop offset="100%" stop-color="${t.fg}" stop-opacity="0.10"/>
+          </radialGradient>
+        </defs>
+        <rect width="${w}" height="${h}" fill="${t.bg}"/>
+        <g filter="url(#b-${seed})">
+          <ellipse cx="${w*0.5}" cy="${h*0.55}" rx="${w*0.4}" ry="${h*0.32}" fill="url(#g-${seed})"/>
+        </g>
+        <!-- tiny smoke whisp in placeholder -->
+        <g stroke="${t.fg}" stroke-width="0.8" fill="none" opacity="0.4" stroke-linecap="round">
+          <path d="M ${w*0.5} ${h*0.62} q -10 -40 6 -80 q 14 -36 -4 -68"/>
+        </g>
+        <rect width="${w}" height="${h}" filter="url(#n-${seed})" opacity="0.55"/>
+      </svg>`;
+  }
+
+  /* ───── render catalog ───── */
+  const catalogEl = document.getElementById("catalog");
+  items.forEach((it, i) => {
+    const card = document.createElement("div");
+    card.className = "item reveal";
+    card.dataset.id = it.id;
+
+    const brushChars = Array.from(it.name).join("<br/>");
+    const compStr = it.composition.join(" · ");
+    const impStr = it.impressions.map(w => `<span>${w}</span>`).join(`<span class="dot">·</span>`);
+
+    card.innerHTML = `
+      <div class="nameblock">
+        <div class="brushname zh-only">${brushChars}</div>
+        <div class="brushname en-only" style="writing-mode: horizontal-tb; font-family: var(--serif-en); font-style: italic; font-size: 32px; letter-spacing: 0.06em; align-self: end;">${it.name}</div>
+        <div class="left">
+          ${sealHtml(it.vendorChars)}
+          <div class="vendor"><span class="zh-only">${it.vendor}</span><span class="en-only">${it.vendor}</span></div>
+          <div class="ptype"><span class="zh-only">${it.ptype}</span><span class="en-only">${it.ptypeEn}</span></div>
+        </div>
+      </div>
+      <div class="item-rule"></div>
+      <div class="composition">
+        <span class="lbl zh-only">成 分</span>
+        <span class="lbl en-only">notes</span>
+        ${compStr}
+      </div>
+      <div class="impression">${impStr}</div>
+    `;
+    card.addEventListener("click", () => openModal(it));
+    catalogEl.appendChild(card);
+  });
+
+  /* ───── modal ───── */
+  const modal = document.getElementById("modal");
+  const shell = document.getElementById("modalShell");
+  const closeBtn = document.getElementById("modalClose");
+
+  function reviewHtml(review) {
+    return review.map(r => {
+      if (typeof r === "string") return `<span class="line">${r}</span>`;
+      return `<span class="line pull">${r.pull}</span>`;
+    }).join("");
+  }
+
+  function openModal(it) {
+    const brushChars = Array.from(it.name).join("<br/>");
+    const sourceTxt = it.recipeSource && it.recipeSource !== "占位"
+      ? `<span class="source">——〈${it.recipeSource}〉</span>` : "";
+
+    shell.innerHTML = `
+      <!-- title block: brush name + seal stack -->
+      <div class="d-row right-narrow">
+        <div class="d-titleblock">
+          <div class="brushname">${brushChars}</div>
+          <div class="stack">
+            ${sealHtml(it.vendorChars)}
+            <div class="vendor">${it.vendor}</div>
+            <div class="ptype-big">${it.ptype}</div>
+          </div>
+        </div>
+        <div class="d-photo">${placeholderSVG(it.seedA, it.tone, 600, 750)}</div>
+      </div>
+
+      <!-- ancient recipe + first review chunk -->
+      <div class="d-row left-narrow">
+        <div class="recipe">${it.recipe}${sourceTxt}</div>
+        <div class="review">${reviewHtml(it.review.slice(0, Math.ceil(it.review.length / 2)))}</div>
+      </div>
+
+      <!-- a single wider photo -->
+      <div class="d-row single">
+        <div class="d-photo wide">${placeholderSVG(it.seedB, it.tone, 1000, 600)}</div>
+      </div>
+
+      <!-- second review chunk -->
+      <div class="d-row single">
+        <div class="review">${reviewHtml(it.review.slice(Math.ceil(it.review.length / 2)))}</div>
+      </div>
+
+      <!-- temperature data -->
+      <div class="d-data">
+        ${it.temp.map(t => `<div class="row">${t}</div>`).join("")}
+      </div>
+    `;
+
+    modal.classList.add("open");
+    document.body.style.overflow = "hidden";
+    modal.scrollTop = 0;
+  }
+  function closeModal(){ modal.classList.remove("open"); document.body.style.overflow = ""; shell.innerHTML = ""; }
+  closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+  /* ───── nav scroll behavior ───── */
+  const nav = document.getElementById('nav');
+  let lastY = 0; let ticking = false;
+  function onScroll() {
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 24);
+    if (y > 200 && y > lastY + 4) nav.classList.add('hidden');
+    else if (y < lastY - 2 || y < 80) nav.classList.remove('hidden');
+    lastY = y; ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
+  }, { passive: true });
+
+  /* ───── reveal anim ───── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ───── language toggle ───── */
+  const langBtn = document.getElementById('langToggle');
+  const html = document.documentElement;
+  langBtn.addEventListener('click', () => {
+    const cur = html.getAttribute('data-lang') === 'zh' ? 'en' : 'zh';
+    html.setAttribute('data-lang', cur);
+    html.setAttribute('lang', cur === 'zh' ? 'zh-CN' : 'en');
+    langBtn.querySelectorAll('span[data-lang-btn]').forEach(s => {
+      s.classList.toggle('active', s.dataset.langBtn === cur);
+    });
+  });
+</script>
+
+</body>
+</html>

@@ -1,0 +1,8 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 64 64">
+  <!-- cream paper square -->
+  <rect width="64" height="64" rx="6" fill="#F4ECDD"/>
+  <!-- ink dot — slightly off-center, organic -->
+  <ellipse cx="32" cy="33" rx="13" ry="12.5" fill="#1B1714" opacity="0.92"/>
+  <!-- a faint bleed -->
+  <ellipse cx="32" cy="33" rx="16" ry="15" fill="#1B1714" opacity="0.08"/>
+</svg>

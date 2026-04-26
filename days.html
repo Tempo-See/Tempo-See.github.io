@@ -1,0 +1,710 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>日子 · TEMPO</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Liu+Jian+Mao+Cao&family=Ma+Shan+Zheng&family=Long+Cang&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* paper & ink — days landing: warm 米白 base */
+    --paper:        #F3EAD4;
+    --paper-deep:   #E5D8B9;
+    --paper-soft:   #F8EFD9;
+    --paper-warm:   #EDE0C2;
+    --ink:          #1B1714;
+    --ink-soft:     #4B4239;
+    --ink-faint:    #948575;
+    --rule:         #D9CDB6;
+
+    /* days landing accent — 陶土红 (parent color) */
+    --accent:       #B5503D;
+    --accent-deep:  #843324;
+    --accent-wash:  #D9907F;
+
+    /* the three books' tones — used here on covers as a hint */
+    --paper-breeze:  #EAEEDD;   /* 微风日记 — 淡青芽 */
+    --paper-travel:  #F2DECC;   /* 途中一页 — 暖陶土 */
+    --paper-musing:  #E8E1D2;   /* 浮生漫旅 — 灰米 */
+    --ink-breeze:    #6E7A45;
+    --ink-travel:    #B5503D;
+    --ink-musing:    #5A4B3E;
+
+    --serif-zh: "Noto Serif SC", "Songti SC", "STSong", serif;
+    --serif-en: "Cormorant Garamond", "Noto Serif SC", serif;
+    --hand:     "Liu Jian Mao Cao", "Noto Serif SC", cursive;
+    --brush:    "Ma Shan Zheng", "Noto Serif SC", serif;
+    --hand-2:   "Long Cang", "Noto Serif SC", cursive;
+
+    --max:  1280px;
+    --gut:  clamp(20px, 4vw, 56px);
+    --nav-h: 56px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(rgba(60,40,20,0.025) 1px, transparent 1px),
+      radial-gradient(rgba(60,40,20,0.018) 1px, transparent 1px);
+    background-size: 3px 3px, 5px 5px;
+    background-position: 0 0, 1px 2px;
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ───────────── nav ───────────── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: var(--nav-h);
+    display: flex; align-items: center;
+    padding: 0 var(--gut);
+    z-index: 50;
+    transition: transform .45s ease, background-color .45s ease, backdrop-filter .45s ease, border-color .45s ease;
+    border-bottom: 1px solid transparent;
+  }
+  .nav.scrolled {
+    background: rgba(243, 234, 212, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom-color: var(--rule);
+  }
+  .nav.hidden { transform: translateY(-100%); }
+  .nav-inner {
+    width: 100%; max-width: var(--max); margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+  }
+  .brand {
+    font-family: var(--serif-en);
+    font-size: 18px; letter-spacing: 0.32em;
+    font-weight: 400; text-transform: uppercase;
+    color: var(--ink);
+  }
+  .brand .dot { display: inline-block; width: 5px; height: 5px;
+    background: var(--ink); border-radius: 50%;
+    transform: translateY(-2px); margin: 0 8px; }
+  .brand .zh { font-family: var(--serif-zh); letter-spacing: 0.4em; font-size: 14px; color: var(--ink-soft); }
+  .nav-links { display: flex; align-items: center; gap: 28px;
+    font-size: 13.5px; color: var(--ink-soft); font-weight: 400; }
+  .nav-links a { position: relative; padding: 4px 0; transition: color .25s ease; }
+  .nav-links a::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -2px;
+    height: 1px; background: var(--ink);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .35s ease;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-links a.is-active { color: var(--ink); }
+  .nav-links a.is-active::after { transform: scaleX(1); background: var(--accent); }
+
+  .lang {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--serif-en); font-size: 12px;
+    letter-spacing: 0.2em; color: var(--ink-faint);
+    cursor: pointer; user-select: none;
+    border: none; background: none; padding: 4px 8px;
+  }
+  .lang span { transition: color .25s ease; }
+  .lang .active { color: var(--ink); }
+  .lang .sep { color: var(--ink-faint); }
+
+  /* ───────────── breadcrumb ───────────── */
+  .crumb {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: calc(var(--nav-h) + 32px) var(--gut) 0;
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--serif-en);
+    font-size: 11.5px;
+    letter-spacing: 0.4em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .crumb a { transition: color .25s ease; }
+  .crumb a:hover { color: var(--ink); }
+  .crumb .sep { width: 18px; height: 1px; background: var(--ink-faint); display: inline-block; }
+
+  /* ───────────── hero ───────────── */
+  .hero {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 6vh var(--gut) 8vh;
+    display: grid;
+    grid-template-columns: 1.05fr 1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+  }
+  .hero-art {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    max-height: 72vh;
+    overflow: hidden;
+    background: var(--paper-soft);
+  }
+  .hero-art svg.wash { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .section-mark {
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.5em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .hero-title {
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    font-size: clamp(54px, 7.5vw, 96px);
+    line-height: 1;
+    letter-spacing: 0.5em;
+    margin: 0 0 12px;
+    color: var(--ink);
+  }
+  .hero-title-en {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(20px, 2vw, 26px);
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+    margin-bottom: 36px;
+  }
+  .hero-divider { width: 38px; height: 1px; background: var(--accent); opacity: 0.6; margin: 0 0 28px; }
+  .hero-prose {
+    font-size: clamp(15px, 1.15vw, 17px);
+    line-height: 2.1;
+    color: var(--ink-soft);
+    max-width: 38ch;
+    font-weight: 300;
+  }
+  .hero-prose p + p { margin-top: 1.2em; }
+  .hero-prose .accent { font-family: var(--hand); font-size: 1.3em; color: var(--accent); line-height: 1.5; }
+
+  /* ───────────── three "books" on a shelf ───────────── */
+  .shelf-head {
+    max-width: var(--max);
+    margin: 4vh auto 5vh;
+    padding: 0 var(--gut);
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 24px;
+  }
+  .shelf-head .label {
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    font-size: 18px;
+    letter-spacing: 0.5em;
+    margin: 0;
+  }
+  .shelf-head .meta {
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.4em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  .shelf {
+    max-width: 1180px;
+    margin: 0 auto;
+    padding: 0 var(--gut) 18vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr 1fr;
+    gap: clamp(30px, 4.5vw, 64px);
+    align-items: end;
+  }
+
+  .book {
+    position: relative;
+    display: block;
+    text-align: center;
+    transition: transform .8s cubic-bezier(.2,.7,.2,1);
+  }
+  .book:hover { transform: translateY(-6px); }
+  .book-art {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 5 / 8;
+    overflow: hidden;
+    box-shadow:
+      0 1px 0 rgba(0,0,0,0.05),
+      0 24px 38px -28px rgba(60,40,20,0.32);
+    transition: box-shadow .6s ease, transform .8s cubic-bezier(.2,.7,.2,1);
+  }
+  .book:hover .book-art {
+    box-shadow:
+      0 1px 0 rgba(0,0,0,0.06),
+      0 32px 44px -28px rgba(60,40,20,0.4);
+  }
+  .book-art svg.cover { display: block; width: 100%; height: 100%; }
+
+  /* the three book tones */
+  .book.b-breeze .book-art { background: var(--paper-breeze); }
+  .book.b-travel .book-art { background: var(--paper-travel); }
+  .book.b-musing .book-art { background: var(--paper-musing); }
+
+  .book-meta {
+    margin-top: 22px;
+    display: flex; flex-direction: column; align-items: center; gap: 6px;
+  }
+  .book-num {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 12px; letter-spacing: 0.3em;
+    color: var(--ink-faint);
+  }
+  .book-title {
+    font-family: var(--serif-zh);
+    font-weight: 400;
+    font-size: 18px;
+    letter-spacing: 0.45em;
+    color: var(--ink);
+    margin: 4px 0 0;
+  }
+  .book.b-breeze .book-title { color: #4D5832; }
+  .book.b-travel .book-title { color: #843324; }
+  .book.b-musing .book-title { color: #3D3326; }
+
+  .book-title-en {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 13px; letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    margin-top: 6px;
+  }
+  .book-line {
+    margin-top: 10px;
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    font-size: 12.5px; letter-spacing: 0.18em;
+    color: var(--ink-soft);
+    line-height: 1.7;
+  }
+  [data-lang="en"] .book-line { font-family: var(--serif-en); letter-spacing: 0.04em; font-size: 13px; }
+
+  /* the brush vertical title on the book cover */
+  .cover-title {
+    position: absolute;
+    top: 14%;
+    left: 50%;
+    transform: translateX(-50%);
+    writing-mode: vertical-rl;
+    font-family: var(--brush);
+    font-size: clamp(22px, 2.6vw, 32px);
+    letter-spacing: 0.18em;
+    line-height: 1.18;
+  }
+  .book.b-breeze .cover-title { color: var(--ink-breeze); }
+  .book.b-travel .cover-title { color: var(--ink-travel); }
+  .book.b-musing .cover-title { color: var(--ink-musing); }
+
+  .cover-en {
+    position: absolute;
+    bottom: 8%;
+    left: 50%;
+    transform: translateX(-50%);
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 11px; letter-spacing: 0.3em;
+    color: var(--ink-faint);
+    text-transform: lowercase;
+  }
+
+  .cover-spine {
+    position: absolute;
+    top: 0; bottom: 0; left: 8px;
+    width: 1px;
+    background: rgba(0,0,0,0.08);
+  }
+
+  /* small seal-like number in corner of cover */
+  .cover-seal {
+    position: absolute;
+    top: 10px; right: 10px;
+    width: 24px; height: 24px;
+    display: flex; align-items: center; justify-content: center;
+    background: var(--accent);
+    color: var(--paper-soft);
+    font-family: var(--serif-en);
+    font-size: 11px;
+    font-style: italic;
+    letter-spacing: 0;
+    border-radius: 1px;
+    opacity: 0.85;
+  }
+  .book.b-breeze .cover-seal { background: var(--ink-breeze); }
+  .book.b-travel .cover-seal { background: var(--ink-travel); }
+  .book.b-musing .cover-seal { background: var(--ink-musing); }
+
+  /* ───────────── footer line ───────────── */
+  .foot {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 0 var(--gut) 8vh;
+    display: flex; align-items: center; justify-content: center;
+    gap: 18px;
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.4em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .foot .rule { width: 60px; height: 1px; background: var(--rule); display: inline-block; }
+
+  /* ───────────── reveal anim ───────────── */
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal.delay-1 { transition-delay: .14s; }
+  .reveal.delay-2 { transition-delay: .28s; }
+  .reveal.delay-3 { transition-delay: .42s; }
+
+  /* ───────────── i18n ───────────── */
+  [data-lang="zh"] .en-only { display: none; }
+  [data-lang="en"] .zh-only { display: none; }
+  [data-lang="en"] body { font-family: var(--serif-en); }
+  [data-lang="en"] .nav-links a, [data-lang="en"] .hero-prose {
+    font-family: var(--serif-en); letter-spacing: 0.02em;
+  }
+  [data-lang="en"] .hero-title { display: none; }
+  [data-lang="en"] .hero-title-en { font-style: normal; font-weight: 300; }
+  [data-lang="en"] .shelf-head .label { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
+  [data-lang="en"] .brand .zh { display: none; }
+  [data-lang="en"] .cover-title {
+    /* En swap: a small Latin label aligned vertically on the spine */
+    writing-mode: horizontal-tb;
+    top: 50%; left: 50%;
+    transform: translate(-50%, -50%);
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: clamp(15px, 1.6vw, 20px);
+    letter-spacing: 0.18em;
+    text-align: center;
+    text-transform: lowercase;
+  }
+  [data-lang="en"] .cover-en { display: none; }
+  [data-lang="en"] .book-title { letter-spacing: 0.18em; font-style: italic; font-family: var(--serif-en); font-weight: 400; }
+
+  /* ───────────── responsive ───────────── */
+  @media (max-width: 900px) {
+    .shelf { grid-template-columns: 1fr; max-width: 360px; gap: 56px; }
+    .book-art { aspect-ratio: 5 / 7; }
+  }
+  @media (max-width: 640px) {
+    .hero { grid-template-columns: 1fr; padding-top: 0; gap: 36px; }
+    .hero-art { aspect-ratio: 4 / 4; max-height: 52vh; }
+    .nav-links a:not(.lang-wrap) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- shared SVG defs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="noise-soft" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" />
+      <feColorMatrix values="0 0 0 0 0.10  0 0 0 0 0.09  0 0 0 0 0.08  0 0 0 0.05 0" />
+      <feComposite in2="SourceGraphic" operator="in" />
+    </filter>
+    <filter id="noise-fine" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="9" />
+      <feColorMatrix values="0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0.04 0" />
+      <feComposite in2="SourceGraphic" operator="in" />
+    </filter>
+    <filter id="bleed-light" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="5" />
+      <feDisplacementMap in="SourceGraphic" scale="9" />
+    </filter>
+    <filter id="bleed-soft" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.028" numOctaves="2" seed="2" />
+      <feDisplacementMap in="SourceGraphic" scale="6" />
+    </filter>
+  </defs>
+</svg>
+
+<!-- ──────────── nav ──────────── -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="TEMPO">
+      <span>TEMPO</span><span class="dot"></span><span class="zh">节奏</span>
+    </a>
+    <div class="nav-links">
+      <a href="photography.html"><span class="zh-only">摄影</span><span class="en-only">Photography</span></a>
+      <a href="days.html" class="is-active"><span class="zh-only">日子</span><span class="en-only">Days</span></a>
+      <a href="crochet.html"><span class="zh-only">钩针</span><span class="en-only">Crochet</span></a>
+      <a href="incense.html"><span class="zh-only">熏香</span><span class="en-only">Incense</span></a>
+      <a href="index.html#about"><span class="zh-only">关于</span><span class="en-only">About</span></a>
+      <button class="lang" id="langToggle" aria-label="language">
+        <span data-lang-btn="zh" class="active">中</span>
+        <span class="sep">/</span>
+        <span data-lang-btn="en">EN</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ──────────── breadcrumb ──────────── -->
+<div class="crumb reveal">
+  <a href="index.html">TEMPO</a>
+  <span class="sep"></span>
+  <span><span class="zh-only">日 子</span><span class="en-only">Days</span></span>
+</div>
+
+<!-- ──────────── hero ──────────── -->
+<header class="hero">
+  <div class="hero-art reveal">
+    <!-- ink-wash: three notebooks stacked on a wooden desk -->
+    <svg class="wash" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <linearGradient id="g-desk" x1="0" y1="0" x2="0" y2="1">
+          <stop offset="0%"  stop-color="#F1E2C5"/>
+          <stop offset="60%" stop-color="#E2CFAE"/>
+          <stop offset="100%" stop-color="#A98660"/>
+        </linearGradient>
+      </defs>
+      <rect width="400" height="500" fill="url(#g-desk)"/>
+      <!-- soft window light from top-left -->
+      <g filter="url(#bleed-light)" opacity="0.4">
+        <polygon points="0,0 200,0 110,300 0,260" fill="#F8EFD7"/>
+      </g>
+      <!-- desk horizon line -->
+      <line x1="0" y1="200" x2="400" y2="200" stroke="#1B1714" stroke-width="0.5" opacity="0.25"/>
+
+      <!-- three stacked notebooks (back to front) -->
+      <!-- musing book — bottom (largest, slightly skewed) -->
+      <g filter="url(#bleed-soft)">
+        <rect x="78" y="240" width="244" height="180" fill="#E8E1D2"/>
+        <rect x="78" y="240" width="244" height="6"   fill="#5A4B3E" opacity="0.6"/>
+      </g>
+      <line x1="86" y1="244" x2="86" y2="416" stroke="#1B1714" stroke-width="0.5" opacity="0.25"/>
+
+      <!-- travel book — middle -->
+      <g filter="url(#bleed-soft)">
+        <rect x="92" y="218" width="218" height="34" fill="#F2DECC"/>
+        <rect x="92" y="218" width="218" height="4"  fill="#B5503D" opacity="0.7"/>
+      </g>
+      <line x1="98" y1="222" x2="98" y2="248" stroke="#1B1714" stroke-width="0.4" opacity="0.25"/>
+
+      <!-- breeze book — top (smaller, opened slightly) -->
+      <g filter="url(#bleed-soft)">
+        <rect x="108" y="190" width="186" height="32" fill="#EAEEDD"/>
+        <rect x="108" y="190" width="186" height="4"  fill="#6E7A45" opacity="0.7"/>
+      </g>
+      <line x1="114" y1="194" x2="114" y2="218" stroke="#1B1714" stroke-width="0.4" opacity="0.25"/>
+
+      <!-- a small loose page peeking out -->
+      <g filter="url(#bleed-soft)" opacity="0.92">
+        <polygon points="180,168 268,156 274,196 188,202" fill="#F8EFD9"/>
+      </g>
+      <!-- a couple of handwritten ink lines on the loose page -->
+      <line x1="190" y1="178" x2="252" y2="174" stroke="#3F2E22" stroke-width="0.6" opacity="0.55"/>
+      <line x1="192" y1="186" x2="232" y2="184" stroke="#3F2E22" stroke-width="0.5" opacity="0.5"/>
+
+      <!-- a tiny pen -->
+      <g opacity="0.7">
+        <line x1="294" y1="398" x2="346" y2="378" stroke="#1B1714" stroke-width="2.4" stroke-linecap="round"/>
+        <line x1="290" y1="400" x2="298" y2="396" stroke="#B5503D" stroke-width="2.4" stroke-linecap="round"/>
+      </g>
+
+      <rect width="400" height="500" filter="url(#noise-soft)" opacity="0.55"/>
+    </svg>
+  </div>
+
+  <div class="hero-text">
+    <div class="section-mark reveal delay-1">II · Days</div>
+    <h1 class="hero-title reveal delay-1 zh-only">日&nbsp;&nbsp;子</h1>
+    <div class="hero-title-en reveal delay-2">Days</div>
+    <div class="hero-divider reveal delay-2"></div>
+    <div class="hero-prose reveal delay-3">
+      <div class="zh-only">
+        <p>三本日记，<br/>记我走过的，<br/>和我没有走远的。</p>
+        <p>有时是风吹过窗户，<br/>有时是路上的某个下午，<br/>有时是夜里忽然想起的一句话。</p>
+        <p class="accent">日子是慢的，<br/>翻页也是。</p>
+      </div>
+      <div class="en-only">
+        <p>Three notebooks —<br/>one for places I've been,<br/>one for places I haven't gone far from.</p>
+        <p>Sometimes the wind through a window.<br/>Sometimes an afternoon on the road.<br/>Sometimes a sentence that arrives at night.</p>
+        <p class="accent">Days move slowly —<br/>so do the pages.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ──────────── three diary covers ──────────── -->
+<section>
+  <div class="shelf-head">
+    <h2 class="label reveal">
+      <span class="zh-only">三&nbsp;&nbsp;本</span>
+      <span class="en-only">Three Notebooks</span>
+    </h2>
+    <div class="meta reveal delay-1">— III —</div>
+  </div>
+
+  <div class="shelf">
+
+    <!-- 微风日记 -->
+    <a class="book b-breeze reveal" href="days-breeze.html" aria-label="微风日记">
+      <div class="book-art">
+        <svg class="cover" viewBox="0 0 200 320" preserveAspectRatio="none" aria-hidden="true">
+          <rect width="200" height="320" fill="#EAEEDD"/>
+          <!-- subtle paper grain -->
+          <rect width="200" height="320" filter="url(#noise-fine)" opacity="0.5"/>
+          <!-- a tiny breeze line -->
+          <g opacity="0.55" stroke="#6E7A45" stroke-width="0.8" fill="none">
+            <path d="M 30 280 q 18 -8 36 0 t 36 0 t 36 0 t 36 0"/>
+          </g>
+          <!-- a small leaf bottom-left -->
+          <g opacity="0.6" fill="#6E7A45">
+            <path d="M 28 270 q -6 -10 4 -16 q 8 -2 10 8 q -4 8 -14 8 z"/>
+          </g>
+        </svg>
+        <div class="cover-spine"></div>
+        <div class="cover-seal">i</div>
+        <div class="cover-title"><span class="zh-only">微风日记</span><span class="en-only">breeze diary</span></div>
+        <div class="cover-en">breeze</div>
+      </div>
+      <div class="book-meta">
+        <span class="book-num">i.</span>
+        <h3 class="book-title"><span class="zh-only">微风日记</span><span class="en-only">Breeze Diary</span></h3>
+        <div class="book-title-en">breeze diary</div>
+        <p class="book-line">
+          <span class="zh-only">日常 vlog · 慢慢吹过</span>
+          <span class="en-only">daily vlogs · drifting through</span>
+        </p>
+      </div>
+    </a>
+
+    <!-- 途中一页 -->
+    <a class="book b-travel reveal delay-1" href="days-travel.html" aria-label="途中一页">
+      <div class="book-art">
+        <svg class="cover" viewBox="0 0 200 320" preserveAspectRatio="none" aria-hidden="true">
+          <rect width="200" height="320" fill="#F2DECC"/>
+          <!-- a slight diagonal "fold" hint suggesting "a page" -->
+          <g opacity="0.18" fill="#B5503D">
+            <polygon points="160,0 200,0 200,40"/>
+          </g>
+          <line x1="160" y1="0" x2="200" y2="40" stroke="#B5503D" stroke-width="0.6" opacity="0.35"/>
+          <rect width="200" height="320" filter="url(#noise-fine)" opacity="0.5"/>
+          <!-- a path / horizon line at bottom -->
+          <g opacity="0.5" stroke="#B5503D" stroke-width="0.8" fill="none">
+            <path d="M 24 274 q 50 -8 80 0 t 76 -2"/>
+          </g>
+          <!-- tiny mountain mark -->
+          <g opacity="0.55" fill="#843324">
+            <polygon points="100,266 110,254 122,266"/>
+            <polygon points="118,266 130,250 144,266"/>
+          </g>
+        </svg>
+        <div class="cover-spine"></div>
+        <div class="cover-seal">ii</div>
+        <div class="cover-title"><span class="zh-only">途中一页</span><span class="en-only">a page on the road</span></div>
+        <div class="cover-en">on the road</div>
+      </div>
+      <div class="book-meta">
+        <span class="book-num">ii.</span>
+        <h3 class="book-title"><span class="zh-only">途中一页</span><span class="en-only">A Page on the Road</span></h3>
+        <div class="book-title-en">on the road</div>
+        <p class="book-line">
+          <span class="zh-only">旅行 vlog · 一程一记</span>
+          <span class="en-only">travel vlogs · one stop, one page</span>
+        </p>
+      </div>
+    </a>
+
+    <!-- 浮生漫旅 -->
+    <a class="book b-musing reveal delay-2" href="days-musings.html" aria-label="浮生漫旅">
+      <div class="book-art">
+        <svg class="cover" viewBox="0 0 200 320" preserveAspectRatio="none" aria-hidden="true">
+          <rect width="200" height="320" fill="#E8E1D2"/>
+          <!-- a thin embossed border to suggest hardcover -->
+          <rect x="10" y="10" width="180" height="300" fill="none" stroke="#5A4B3E" stroke-width="0.6" opacity="0.4"/>
+          <rect width="200" height="320" filter="url(#noise-fine)" opacity="0.55"/>
+          <!-- a single ink dot like a thought drop -->
+          <g filter="url(#bleed-soft)" opacity="0.68">
+            <circle cx="100" cy="270" r="6" fill="#5A4B3E"/>
+          </g>
+          <line x1="100" y1="278" x2="100" y2="298" stroke="#5A4B3E" stroke-width="0.6" opacity="0.5"/>
+        </svg>
+        <div class="cover-spine"></div>
+        <div class="cover-seal">iii</div>
+        <div class="cover-title"><span class="zh-only">浮生漫旅</span><span class="en-only">a drifting life</span></div>
+        <div class="cover-en">drifts</div>
+      </div>
+      <div class="book-meta">
+        <span class="book-num">iii.</span>
+        <h3 class="book-title"><span class="zh-only">浮生漫旅</span><span class="en-only">A Drifting Life</span></h3>
+        <div class="book-title-en">drifts</div>
+        <p class="book-line">
+          <span class="zh-only">所思所想 · 小小记号</span>
+          <span class="en-only">musings · small marks</span>
+        </p>
+      </div>
+    </a>
+
+  </div>
+
+  <div class="foot">
+    <span class="rule"></span>
+    <span>tempo · days</span>
+    <span class="rule"></span>
+  </div>
+</section>
+
+<script>
+  /* ───── nav scroll behavior ───── */
+  const nav = document.getElementById('nav');
+  let lastY = 0; let ticking = false;
+  function onScroll() {
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 24);
+    if (y > 200 && y > lastY + 4) nav.classList.add('hidden');
+    else if (y < lastY - 2 || y < 80) nav.classList.remove('hidden');
+    lastY = y; ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
+  }, { passive: true });
+
+  /* ───── reveal anim ───── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.10, rootMargin: "0px 0px -6% 0px" });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ───── language toggle ───── */
+  const langBtn = document.getElementById('langToggle');
+  const html = document.documentElement;
+  langBtn.addEventListener('click', () => {
+    const cur = html.getAttribute('data-lang') === 'zh' ? 'en' : 'zh';
+    html.setAttribute('data-lang', cur);
+    html.setAttribute('lang', cur === 'zh' ? 'zh-CN' : 'en');
+    langBtn.querySelectorAll('span[data-lang-btn]').forEach(s => {
+      s.classList.toggle('active', s.dataset.langBtn === cur);
+    });
+  });
+</script>
+
+</body>
+</html>

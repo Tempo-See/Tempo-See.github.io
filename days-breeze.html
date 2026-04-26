@@ -1,0 +1,890 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>微风日记 · TEMPO</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Liu+Jian+Mao+Cao&family=Long+Cang&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* paper & ink — breeze: 淡青芽 sage tint */
+    --paper:        #EAEEDD;
+    --paper-deep:   #D8DEC4;
+    --paper-soft:   #F0F3E2;
+    --paper-warm:   #DEE3C8;
+    --ink:          #1B1714;
+    --ink-soft:     #4B4239;
+    --ink-faint:    #8B8B72;
+    --rule:         #C7CEAB;
+
+    /* breeze accent: olive green family */
+    --accent:       #6E7A45;
+    --accent-deep:  #4D5832;
+    --accent-wash:  #A8B07F;
+
+    --serif-zh: "Noto Serif SC", "Songti SC", "STSong", serif;
+    --serif-en: "Cormorant Garamond", "Noto Serif SC", serif;
+    --hand:     "Liu Jian Mao Cao", "Noto Serif SC", cursive;
+    --hand-2:   "Long Cang", "Noto Serif SC", cursive;
+
+    --max:  1280px;
+    --gut:  clamp(20px, 4vw, 56px);
+    --nav-h: 56px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(rgba(60,60,30,0.025) 1px, transparent 1px),
+      radial-gradient(rgba(60,60,30,0.018) 1px, transparent 1px);
+    background-size: 3px 3px, 5px 5px;
+    background-position: 0 0, 1px 2px;
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ───────────── nav ───────────── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: var(--nav-h);
+    display: flex; align-items: center;
+    padding: 0 var(--gut);
+    z-index: 50;
+    transition: transform .45s ease, background-color .45s ease, backdrop-filter .45s ease, border-color .45s ease;
+    border-bottom: 1px solid transparent;
+  }
+  .nav.scrolled {
+    background: rgba(234, 238, 221, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom-color: var(--rule);
+  }
+  .nav.hidden { transform: translateY(-100%); }
+  .nav-inner {
+    width: 100%; max-width: var(--max); margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+  }
+  .brand {
+    font-family: var(--serif-en);
+    font-size: 18px; letter-spacing: 0.32em;
+    font-weight: 400; text-transform: uppercase;
+    color: var(--ink);
+  }
+  .brand .dot { display: inline-block; width: 5px; height: 5px;
+    background: var(--ink); border-radius: 50%;
+    transform: translateY(-2px); margin: 0 8px; }
+  .brand .zh { font-family: var(--serif-zh); letter-spacing: 0.4em; font-size: 14px; color: var(--ink-soft); }
+  .nav-links { display: flex; align-items: center; gap: 28px;
+    font-size: 13.5px; color: var(--ink-soft); font-weight: 400; }
+  .nav-links a { position: relative; padding: 4px 0; transition: color .25s ease; }
+  .nav-links a::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -2px;
+    height: 1px; background: var(--ink);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .35s ease;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-links a.is-active { color: var(--ink); }
+  .nav-links a.is-active::after { transform: scaleX(1); background: var(--accent); }
+
+  .lang {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--serif-en); font-size: 12px;
+    letter-spacing: 0.2em; color: var(--ink-faint);
+    cursor: pointer; user-select: none;
+    border: none; background: none; padding: 4px 8px;
+  }
+  .lang span { transition: color .25s ease; }
+  .lang .active { color: var(--ink); }
+  .lang .sep { color: var(--ink-faint); }
+
+  /* ───────────── breadcrumb ───────────── */
+  .crumb {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: calc(var(--nav-h) + 32px) var(--gut) 0;
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--serif-en);
+    font-size: 11.5px;
+    letter-spacing: 0.4em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .crumb a { transition: color .25s ease; }
+  .crumb a:hover { color: var(--ink); }
+  .crumb .sep { width: 18px; height: 1px; background: var(--ink-faint); display: inline-block; }
+
+  /* ───────────── diary head (slim) ───────────── */
+  .diary-head {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: calc(var(--nav-h) + 36px) var(--gut) 7vh;
+    display: flex; flex-direction: column;
+    align-items: flex-start;
+    gap: 6px;
+  }
+  .diary-back {
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.35em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    padding: 4px 0;
+    transition: color .25s ease;
+  }
+  .diary-back:hover { color: var(--accent-deep); }
+  .diary-name {
+    font-family: var(--serif-zh);
+    font-weight: 400;
+    font-size: clamp(22px, 2.1vw, 28px);
+    letter-spacing: 0.32em;
+    margin: 6px 0 0;
+    color: var(--ink);
+    line-height: 1.2;
+  }
+  [data-lang="en"] .diary-name {
+    font-family: var(--serif-en); font-style: italic; letter-spacing: 0.04em;
+  }
+  .diary-en {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 12px; letter-spacing: 0.22em;
+    color: var(--ink-faint);
+    text-transform: lowercase;
+  }
+  [data-lang="en"] .diary-en { display: none; }
+
+  /* ───────────── hero ───────────── */
+  .hero {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 4vh var(--gut) 8vh;
+    display: grid;
+    grid-template-columns: 1fr 1.05fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+  }
+  .hero-art {
+    position: relative;
+    aspect-ratio: 5 / 4;
+    width: 100%;
+    max-height: 60vh;
+    overflow: hidden;
+    background: var(--paper-soft);
+  }
+  .hero-art svg.wash { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .section-mark {
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.5em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .hero-title {
+    font-family: var(--serif-zh);
+    font-weight: 400;
+    font-size: clamp(40px, 5.4vw, 68px);
+    line-height: 1.1;
+    letter-spacing: 0.4em;
+    margin: 0 0 12px;
+    color: var(--ink);
+  }
+  .hero-title-en {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(18px, 1.8vw, 22px);
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+    margin-bottom: 28px;
+  }
+  .hero-divider { width: 38px; height: 1px; background: var(--accent); opacity: 0.6; margin: 0 0 24px; }
+  .hero-prose {
+    font-size: clamp(14.5px, 1.1vw, 16px);
+    line-height: 2.1;
+    color: var(--ink-soft);
+    max-width: 38ch;
+    font-weight: 300;
+  }
+  .hero-prose p + p { margin-top: 1em; }
+  .hero-prose .accent { font-family: var(--hand); font-size: 1.3em; color: var(--accent); line-height: 1.5; }
+
+  /* ───────────── log feed ───────────── */
+  .log-head {
+    max-width: var(--max);
+    margin: 4vh auto 5vh;
+    padding: 0 var(--gut);
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 24px;
+  }
+  .log-head .label {
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    font-size: 18px;
+    letter-spacing: 0.5em;
+    margin: 0;
+  }
+  .log-head .meta {
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.4em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  .feed {
+    max-width: 980px;
+    margin: 0 auto;
+    padding: 0 var(--gut) 16vh;
+    display: flex; flex-direction: column;
+    gap: clamp(64px, 9vh, 110px);
+  }
+
+  .entry {
+    display: grid;
+    grid-template-columns: 1.25fr 1fr;
+    gap: clamp(32px, 5vw, 64px);
+    align-items: center;
+  }
+  .entry.flip { grid-template-columns: 1fr 1.25fr; }
+  .entry.flip .entry-art { order: 2; }
+  .entry.flip .entry-text { order: 1; }
+
+  .entry-art {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 16 / 9;
+    overflow: hidden;
+    background: var(--paper-warm);
+    box-shadow: 0 18px 30px -22px rgba(60,60,30,0.3);
+    transition: transform .8s cubic-bezier(.2,.7,.2,1);
+  }
+  .entry:hover .entry-art { transform: translateY(-3px); }
+  .entry-art svg { width: 100%; height: 100%; display: block; }
+
+  /* play hint — a faint circle in lower-right */
+  .entry-art .play {
+    position: absolute;
+    right: 14px; bottom: 14px;
+    width: 36px; height: 36px;
+    border: 1px solid rgba(255,255,255,0.55);
+    border-radius: 50%;
+    display: flex; align-items: center; justify-content: center;
+    backdrop-filter: blur(2px);
+    background: rgba(0,0,0,0.18);
+    transition: background .35s ease;
+  }
+  .entry-art .play::before {
+    content: "";
+    width: 0; height: 0;
+    border-left: 8px solid #fff;
+    border-top: 5px solid transparent;
+    border-bottom: 5px solid transparent;
+    margin-left: 2px;
+  }
+  .entry:hover .entry-art .play { background: rgba(0,0,0,0.32); }
+
+  .entry-text {
+    display: flex; flex-direction: column;
+    gap: 14px;
+  }
+  .entry-date {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 13px; letter-spacing: 0.18em;
+    color: var(--ink-faint);
+  }
+  .entry-title {
+    font-family: var(--serif-zh);
+    font-weight: 400;
+    font-size: clamp(22px, 2vw, 28px);
+    letter-spacing: 0.18em;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.4;
+  }
+  .entry-note {
+    font-family: var(--hand);
+    font-size: 17px;
+    color: var(--accent-deep);
+    line-height: 1.7;
+    letter-spacing: 0.04em;
+    margin-top: 4px;
+  }
+  [data-lang="en"] .entry-note { font-family: var(--serif-en); font-style: italic; font-size: 15px; color: var(--accent-deep); letter-spacing: 0.04em; }
+
+  .entry-place {
+    display: inline-flex; align-items: center; gap: 10px;
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.32em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-top: 4px;
+  }
+  .entry-place::before {
+    content: ""; display: inline-block;
+    width: 18px; height: 1px; background: var(--ink-faint);
+  }
+
+  .entry-links {
+    display: flex; align-items: center; gap: 18px;
+    margin-top: 12px;
+  }
+  .link-btn {
+    display: inline-flex; align-items: center; gap: 8px;
+    padding: 8px 16px;
+    border: 1px solid var(--accent);
+    color: var(--accent-deep);
+    font-family: var(--serif-zh);
+    font-size: 13px;
+    letter-spacing: 0.18em;
+    transition: background .35s ease, color .35s ease;
+  }
+  [data-lang="en"] .link-btn { font-family: var(--serif-en); letter-spacing: 0.1em; font-style: italic; }
+  .link-btn:hover { background: var(--accent); color: var(--paper-soft); }
+  .link-btn .arrow { font-family: var(--serif-en); font-size: 14px; }
+
+  .link-secondary {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 12px; letter-spacing: 0.16em;
+    color: var(--ink-faint);
+    transition: color .25s ease;
+    border-bottom: 1px solid transparent;
+    padding-bottom: 1px;
+  }
+  .link-secondary:hover { color: var(--accent-deep); border-bottom-color: var(--accent); }
+
+  /* ───────────── reveal anim ───────────── */
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal.delay-1 { transition-delay: .14s; }
+  .reveal.delay-2 { transition-delay: .28s; }
+  .reveal.delay-3 { transition-delay: .42s; }
+
+  /* ───────────── i18n ───────────── */
+  [data-lang="zh"] .en-only { display: none; }
+  [data-lang="en"] .zh-only { display: none; }
+  [data-lang="en"] body { font-family: var(--serif-en); }
+  [data-lang="en"] .nav-links a, [data-lang="en"] .hero-prose, [data-lang="en"] .entry-title {
+    font-family: var(--serif-en);
+  }
+  [data-lang="en"] .entry-title { letter-spacing: 0.04em; font-style: italic; }
+  [data-lang="en"] .hero-title { display: none; }
+  [data-lang="en"] .hero-title-en { font-style: normal; font-weight: 300; }
+  [data-lang="en"] .log-head .label { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
+  [data-lang="en"] .brand .zh { display: none; }
+
+  /* ───────────── responsive ───────────── */
+  @media (max-width: 760px) {
+    .entry, .entry.flip {
+      grid-template-columns: 1fr;
+      gap: 24px;
+    }
+    .entry.flip .entry-art { order: 1; }
+    .entry.flip .entry-text { order: 2; }
+    .hero { grid-template-columns: 1fr; padding-top: 0; gap: 36px; }
+    .hero-art { aspect-ratio: 4 / 4; max-height: 52vh; }
+    .nav-links a:not(.lang-wrap) { display: none; }
+  }
+</style>
+</head>
+<body>
+
+<!-- shared SVG defs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="noise-soft" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" />
+      <feColorMatrix values="0 0 0 0 0.10  0 0 0 0 0.09  0 0 0 0 0.08  0 0 0 0.05 0" />
+      <feComposite in2="SourceGraphic" operator="in" />
+    </filter>
+    <filter id="noise-fine" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="1.4" numOctaves="2" seed="9" />
+      <feColorMatrix values="0 0 0 0 0.12  0 0 0 0 0.10  0 0 0 0 0.08  0 0 0 0.04 0" />
+      <feComposite in2="SourceGraphic" operator="in" />
+    </filter>
+    <filter id="bleed-light" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="5" />
+      <feDisplacementMap in="SourceGraphic" scale="9" />
+    </filter>
+  </defs>
+</svg>
+
+<!-- ──────────── nav ──────────── -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="TEMPO">
+      <span>TEMPO</span><span class="dot"></span><span class="zh">节奏</span>
+    </a>
+    <div class="nav-links">
+      <a href="photography.html"><span class="zh-only">摄影</span><span class="en-only">Photography</span></a>
+      <a href="days.html" class="is-active"><span class="zh-only">日子</span><span class="en-only">Days</span></a>
+      <a href="crochet.html"><span class="zh-only">钩针</span><span class="en-only">Crochet</span></a>
+      <a href="incense.html"><span class="zh-only">熏香</span><span class="en-only">Incense</span></a>
+      <a href="index.html#about"><span class="zh-only">关于</span><span class="en-only">About</span></a>
+      <button class="lang" id="langToggle" aria-label="language">
+        <span data-lang-btn="zh" class="active">中</span>
+        <span class="sep">/</span>
+        <span data-lang-btn="en">EN</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ──────────── diary head (slim) ──────────── -->
+<div class="diary-head reveal">
+  <a class="diary-back" href="days.html">
+    <span class="zh-only">← 日子</span>
+    <span class="en-only">← Days</span>
+  </a>
+  <h1 class="diary-name">
+    <span class="zh-only">微风日记</span>
+    <span class="en-only">Breeze Diary</span>
+  </h1>
+  <div class="diary-en">breeze diary</div>
+</div>
+
+<!-- ──────────── feed ──────────── -->
+<section>
+  <div class="feed" id="feed"></div>
+</section>
+
+<script>
+  /* ─────────────────────────────────────────
+     Vlog thumbnail generator — daily life
+     scenes in the sage palette.
+  ───────────────────────────────────────── */
+
+  const palette = {
+    sky:  "#EFF2DA",
+    soft: "#D8DEC4",
+    deep: "#4D5832",
+    warm: "#A89568",
+    olive:"#6E7A45",
+    cream:"#F8FAEA",
+  };
+
+  const scenes = {
+    kitchenMorning() {
+      return `
+        <rect width="800" height="450" fill="${palette.sky}"/>
+        <!-- counter -->
+        <rect x="0" y="300" width="800" height="150" fill="${palette.soft}"/>
+        <line x1="0" y1="300" x2="800" y2="300" stroke="${palette.olive}" stroke-width="0.6" opacity="0.5"/>
+        <!-- light from window upper-right -->
+        <g filter="url(#bleed-light)">
+          <polygon points="500,0 800,0 800,260 600,300" fill="${palette.cream}" opacity="0.85"/>
+        </g>
+        <!-- a kettle silhouette -->
+        <g fill="${palette.deep}" opacity="0.85">
+          <ellipse cx="220" cy="290" rx="50" ry="18"/>
+          <path d="M 175 290 q 0 -55 45 -55 q 45 0 45 55 z"/>
+          <rect x="195" y="218" width="50" height="6"/>
+        </g>
+        <!-- a cup -->
+        <g fill="${palette.olive}" opacity="0.7">
+          <rect x="380" y="265" width="44" height="35" rx="2"/>
+        </g>
+        <!-- steam curls -->
+        <g stroke="${palette.deep}" stroke-width="1" fill="none" opacity="0.4">
+          <path d="M 220 220 q -8 -12 4 -22 q 12 -10 -2 -22"/>
+          <path d="M 245 218 q 6 -10 -2 -20"/>
+          <path d="M 395 258 q -4 -10 4 -18"/>
+        </g>
+        <rect width="800" height="450" filter="url(#noise-fine)" opacity="0.55"/>`;
+    },
+    balconyAfternoon() {
+      return `
+        <rect width="800" height="450" fill="${palette.sky}"/>
+        <rect y="280" width="800" height="170" fill="${palette.soft}" opacity="0.8"/>
+        <!-- railing -->
+        <line x1="0" y1="280" x2="800" y2="280" stroke="${palette.deep}" stroke-width="1.2" opacity="0.55"/>
+        <g stroke="${palette.deep}" stroke-width="1.5" opacity="0.45">
+          <line x1="60"  y1="280" x2="60"  y2="380"/>
+          <line x1="180" y1="280" x2="180" y2="380"/>
+          <line x1="300" y1="280" x2="300" y2="380"/>
+          <line x1="420" y1="280" x2="420" y2="380"/>
+          <line x1="540" y1="280" x2="540" y2="380"/>
+          <line x1="660" y1="280" x2="660" y2="380"/>
+        </g>
+        <!-- a pot of plant -->
+        <g fill="${palette.olive}" opacity="0.85">
+          <ellipse cx="120" cy="240" rx="32" ry="18"/>
+          <ellipse cx="105" cy="220" rx="18" ry="14"/>
+          <ellipse cx="142" cy="222" rx="20" ry="14"/>
+        </g>
+        <g fill="${palette.warm}" opacity="0.85">
+          <rect x="100" y="248" width="44" height="34"/>
+        </g>
+        <!-- distant building silhouette -->
+        <g fill="${palette.deep}" opacity="0.4">
+          <rect x="500" y="180" width="60" height="100"/>
+          <rect x="580" y="200" width="80" height="80"/>
+          <rect x="690" y="190" width="40" height="90"/>
+        </g>
+        <!-- low sun -->
+        <g filter="url(#bleed-light)" opacity="0.7">
+          <circle cx="400" cy="160" r="32" fill="${palette.cream}"/>
+        </g>
+        <rect width="800" height="450" filter="url(#noise-fine)" opacity="0.55"/>`;
+    },
+    deskNight() {
+      return `
+        <rect width="800" height="450" fill="${palette.deep}"/>
+        <!-- desk surface -->
+        <rect y="280" width="800" height="170" fill="${palette.warm}" opacity="0.7"/>
+        <!-- lamp light pool -->
+        <g filter="url(#bleed-light)" opacity="0.85">
+          <ellipse cx="320" cy="320" rx="220" ry="90" fill="${palette.cream}"/>
+        </g>
+        <!-- lamp -->
+        <g fill="${palette.deep}" opacity="0.95">
+          <path d="M 480 130 L 540 130 L 555 200 L 465 200 Z"/>
+          <line x1="510" y1="200" x2="510" y2="280" stroke="${palette.deep}" stroke-width="3"/>
+          <ellipse cx="510" cy="285" rx="28" ry="6"/>
+        </g>
+        <!-- book on desk -->
+        <g fill="${palette.olive}" opacity="0.85">
+          <rect x="220" y="290" width="180" height="14"/>
+        </g>
+        <line x1="220" y1="297" x2="400" y2="297" stroke="${palette.cream}" stroke-width="0.6" opacity="0.5"/>
+        <!-- pen -->
+        <line x1="380" y1="320" x2="450" y2="304" stroke="${palette.cream}" stroke-width="2" opacity="0.6"/>
+        <rect width="800" height="450" filter="url(#noise-fine)" opacity="0.55"/>`;
+    },
+    walkPark() {
+      return `
+        <rect width="800" height="450" fill="${palette.sky}"/>
+        <!-- ground -->
+        <rect y="320" width="800" height="130" fill="${palette.soft}"/>
+        <!-- path -->
+        <g filter="url(#bleed-light)" opacity="0.85">
+          <polygon points="280,320 520,320 640,450 160,450" fill="${palette.warm}"/>
+        </g>
+        <!-- trees -->
+        <g fill="${palette.olive}" opacity="0.85">
+          <ellipse cx="80"  cy="240" rx="50" ry="40"/>
+          <line x1="80"  y1="240" x2="80"  y2="340" stroke="${palette.deep}" stroke-width="3"/>
+        </g>
+        <g fill="${palette.deep}" opacity="0.75">
+          <ellipse cx="720" cy="220" rx="58" ry="48"/>
+          <line x1="720" y1="220" x2="720" y2="350" stroke="${palette.deep}" stroke-width="3"/>
+        </g>
+        <g fill="${palette.olive}" opacity="0.7">
+          <ellipse cx="200" cy="260" rx="34" ry="28"/>
+          <line x1="200" y1="260" x2="200" y2="320" stroke="${palette.deep}" stroke-width="2"/>
+        </g>
+        <!-- leaves on ground -->
+        <g fill="${palette.warm}" opacity="0.6">
+          <ellipse cx="260" cy="380" rx="3" ry="2"/>
+          <ellipse cx="340" cy="400" rx="2" ry="1.5"/>
+          <ellipse cx="430" cy="370" rx="3" ry="2"/>
+          <ellipse cx="510" cy="410" rx="2.5" ry="1.5"/>
+        </g>
+        <rect width="800" height="450" filter="url(#noise-fine)" opacity="0.55"/>`;
+    },
+    cookSimple() {
+      return `
+        <rect width="800" height="450" fill="${palette.cream}"/>
+        <!-- counter top-down view -->
+        <rect width="800" height="450" fill="${palette.sky}"/>
+        <!-- a wooden cutting board -->
+        <g filter="url(#bleed-light)">
+          <rect x="200" y="120" width="420" height="220" fill="${palette.warm}" opacity="0.85"/>
+        </g>
+        <!-- vegetables (circles in greens/oranges) -->
+        <g opacity="0.9">
+          <circle cx="320" cy="200" r="28" fill="${palette.olive}"/>
+          <circle cx="380" cy="220" r="24" fill="${palette.deep}"/>
+          <circle cx="440" cy="195" r="22" fill="#A8784A"/>
+          <circle cx="500" cy="225" r="26" fill="${palette.olive}"/>
+        </g>
+        <!-- knife -->
+        <g opacity="0.7">
+          <rect x="240" y="290" width="180" height="14" fill="#9DA8B4"/>
+          <rect x="420" y="290" width="40" height="14" fill="${palette.deep}"/>
+        </g>
+        <rect width="800" height="450" filter="url(#noise-fine)" opacity="0.55"/>`;
+    },
+    raincoffee() {
+      return `
+        <rect width="800" height="450" fill="${palette.deep}"/>
+        <rect width="800" height="450" fill="${palette.sky}" opacity="0.6"/>
+        <!-- rain streaks -->
+        <g stroke="${palette.cream}" stroke-width="0.6" opacity="0.55">
+          ${Array.from({length: 35}).map((_, i) =>
+            `<line x1="${(i*23+5)%800}" y1="${(i*47)%200}" x2="${(i*23+15)%800}" y2="${(i*47)%200+30}"/>`
+          ).join("")}
+        </g>
+        <!-- window frame edge -->
+        <rect x="0" y="380" width="800" height="70" fill="${palette.warm}" opacity="0.8"/>
+        <!-- coffee cup near window -->
+        <g fill="${palette.deep}" opacity="0.92">
+          <ellipse cx="200" cy="380" rx="50" ry="14"/>
+          <path d="M 150 380 q 0 -50 50 -50 q 50 0 50 50 z"/>
+        </g>
+        <!-- handle -->
+        <g fill="none" stroke="${palette.deep}" stroke-width="6" opacity="0.92">
+          <path d="M 250 360 q 25 -10 25 -25 q 0 -15 -25 -15"/>
+        </g>
+        <!-- steam -->
+        <g stroke="${palette.cream}" stroke-width="1" fill="none" opacity="0.6">
+          <path d="M 195 320 q -6 -12 4 -22 q 10 -10 -2 -22"/>
+          <path d="M 215 320 q 6 -10 -2 -20"/>
+        </g>
+        <rect width="800" height="450" filter="url(#noise-fine)" opacity="0.55"/>`;
+    },
+    bookSofa() {
+      return `
+        <rect width="800" height="450" fill="${palette.sky}"/>
+        <!-- couch silhouette -->
+        <g fill="${palette.olive}" opacity="0.7">
+          <rect x="80" y="220" width="640" height="140" rx="12"/>
+          <rect x="60" y="200" width="120" height="180" rx="10"/>
+          <rect x="620" y="200" width="120" height="180" rx="10"/>
+        </g>
+        <!-- cushion -->
+        <g fill="${palette.warm}" opacity="0.85">
+          <rect x="400" y="240" width="120" height="80" rx="6"/>
+        </g>
+        <!-- open book -->
+        <g fill="${palette.cream}" opacity="0.95">
+          <polygon points="220,300 360,300 360,360 220,360"/>
+        </g>
+        <line x1="290" y1="300" x2="290" y2="360" stroke="${palette.deep}" stroke-width="0.6" opacity="0.5"/>
+        <g stroke="${palette.deep}" stroke-width="0.5" opacity="0.5">
+          <line x1="230" y1="315" x2="280" y2="315"/>
+          <line x1="230" y1="325" x2="280" y2="325"/>
+          <line x1="230" y1="335" x2="280" y2="335"/>
+          <line x1="300" y1="315" x2="350" y2="315"/>
+          <line x1="300" y1="325" x2="350" y2="325"/>
+        </g>
+        <rect width="800" height="450" filter="url(#noise-fine)" opacity="0.55"/>`;
+    },
+    earlyMorningBike() {
+      return `
+        <rect width="800" height="450" fill="${palette.sky}"/>
+        <!-- horizon -->
+        <rect y="280" width="800" height="170" fill="${palette.soft}"/>
+        <line x1="0" y1="280" x2="800" y2="280" stroke="${palette.olive}" stroke-width="0.5" opacity="0.45"/>
+        <!-- distant low hills -->
+        <g fill="${palette.olive}" opacity="0.5">
+          <path d="M 0 280 Q 200 230 400 270 T 800 250 L 800 280 L 0 280 Z"/>
+        </g>
+        <!-- early sun -->
+        <g filter="url(#bleed-light)" opacity="0.7">
+          <circle cx="600" cy="160" r="40" fill="${palette.cream}"/>
+        </g>
+        <!-- bicycle silhouette -->
+        <g stroke="${palette.deep}" stroke-width="2.4" fill="none" opacity="0.85">
+          <circle cx="240" cy="340" r="36"/>
+          <circle cx="380" cy="340" r="36"/>
+          <line x1="240" y1="340" x2="320" y2="280"/>
+          <line x1="380" y1="340" x2="320" y2="280"/>
+          <line x1="320" y1="280" x2="300" y2="260"/>
+          <line x1="320" y1="280" x2="380" y2="340"/>
+          <line x1="300" y1="260" x2="340" y2="240"/>
+        </g>
+        <rect width="800" height="450" filter="url(#noise-fine)" opacity="0.55"/>`;
+    },
+  };
+
+  function placeholderSVG(scene) {
+    const inner = scenes[scene]();
+    return `<svg viewBox="0 0 800 450" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">${inner}</svg>`;
+  }
+
+  /* ─────────────────────────────────────────
+     8 entries — daily life vlogs
+  ───────────────────────────────────────── */
+  const entries = [
+    {
+      date: "2025.04.18",
+      scene: "raincoffee",
+      titleZh: "下雨的早上，喝两杯咖啡",
+      titleEn: "Two coffees on a rainy morning",
+      noteZh: "什么也不想做，但好像也不算浪费。",
+      noteEn: "Didn't want to do anything — but it didn't feel wasted.",
+      placeZh: "家 · 上海",
+      placeEn: "home · Shanghai",
+      bili: "#",
+      xhs: "#",
+    },
+    {
+      date: "2025.04.10",
+      scene: "balconyAfternoon",
+      titleZh: "阳台 · 4月的下午",
+      titleEn: "Balcony · an April afternoon",
+      noteZh: "阳光从那个角度照过来，多停留了一会儿。",
+      noteEn: "The light came in at that angle and stayed a little longer.",
+      placeZh: "阳台",
+      placeEn: "balcony",
+      bili: "#",
+      xhs: "#",
+    },
+    {
+      date: "2025.03.27",
+      scene: "kitchenMorning",
+      titleZh: "今天的早餐 · 燕麦和苹果",
+      titleEn: "Breakfast today · oats and apple",
+      noteZh: "切苹果的时候忽然想起小学。",
+      noteEn: "Cutting the apple I suddenly remembered being eight.",
+      placeZh: "厨房",
+      placeEn: "kitchen",
+      bili: "#",
+      xhs: "#",
+    },
+    {
+      date: "2025.03.15",
+      scene: "walkPark",
+      titleZh: "公园走两圈",
+      titleEn: "Two laps in the park",
+      noteZh: "树还没绿，但风已经软了。",
+      noteEn: "Trees still bare — but the wind has gone soft.",
+      placeZh: "公园",
+      placeEn: "park",
+      bili: "#",
+      xhs: "#",
+    },
+    {
+      date: "2025.03.02",
+      scene: "deskNight",
+      titleZh: "夜里写一点东西",
+      titleEn: "Writing a little at night",
+      noteZh: "灯打开，世界就只剩这张桌子大。",
+      noteEn: "Turn on the lamp — the world shrinks to this desk.",
+      placeZh: "书桌",
+      placeEn: "desk",
+      bili: "#",
+      xhs: "#",
+    },
+    {
+      date: "2025.02.20",
+      scene: "cookSimple",
+      titleZh: "随便做了点饭",
+      titleEn: "Made something simple",
+      noteZh: "蔬菜切得不齐，但好吃。",
+      noteEn: "The cuts were uneven. Tasted good anyway.",
+      placeZh: "厨房",
+      placeEn: "kitchen",
+      bili: "#",
+      xhs: "#",
+    },
+    {
+      date: "2025.02.05",
+      scene: "bookSofa",
+      titleZh: "看了半天书",
+      titleEn: "An afternoon with a book",
+      noteZh: "看到第六十页的时候，外面下起了雪。",
+      noteEn: "At page sixty, it started snowing outside.",
+      placeZh: "客厅",
+      placeEn: "living room",
+      bili: "#",
+      xhs: "#",
+    },
+    {
+      date: "2025.01.18",
+      scene: "earlyMorningBike",
+      titleZh: "六点骑车 · 沿着河",
+      titleEn: "Six a.m. bike ride · along the river",
+      noteZh: "整条路都是我的。",
+      noteEn: "The whole road, mine.",
+      placeZh: "苏州河边",
+      placeEn: "Suzhou Creek",
+      bili: "#",
+      xhs: "#",
+    },
+  ];
+
+  /* ─────────────────────────────────────────
+     Render feed — alternating layout
+  ───────────────────────────────────────── */
+  const feedEl = document.getElementById("feed");
+  entries.forEach((e, i) => {
+    const node = document.createElement("article");
+    node.className = "entry reveal" + (i % 2 ? " flip" : "");
+    if (i % 3 === 1) node.classList.add("delay-1");
+    if (i % 3 === 2) node.classList.add("delay-2");
+    node.innerHTML = `
+      <a class="entry-art" href="${e.bili}" target="_blank" rel="noopener" aria-label="${e.titleZh}">
+        ${placeholderSVG(e.scene)}
+        <span class="play" aria-hidden="true"></span>
+      </a>
+      <div class="entry-text">
+        <span class="entry-date">${e.date}</span>
+        <h3 class="entry-title"><span class="zh-only">${e.titleZh}</span><span class="en-only">${e.titleEn}</span></h3>
+        <p class="entry-note"><span class="zh-only">${e.noteZh}</span><span class="en-only">${e.noteEn}</span></p>
+        <span class="entry-place"><span class="zh-only">${e.placeZh}</span><span class="en-only">${e.placeEn}</span></span>
+        <div class="entry-links">
+          <a class="link-btn" href="${e.bili}" target="_blank" rel="noopener">
+            <span><span class="zh-only">B站观看</span><span class="en-only">watch on Bilibili</span></span>
+            <span class="arrow">→</span>
+          </a>
+          <a class="link-secondary" href="${e.xhs}" target="_blank" rel="noopener"><span class="zh-only">小红书</span><span class="en-only">also on Xiaohongshu</span></a>
+        </div>
+      </div>
+    `;
+    feedEl.appendChild(node);
+  });
+
+  /* ───── nav scroll behavior ───── */
+  const nav = document.getElementById('nav');
+  let lastY = 0; let ticking = false;
+  function onScroll() {
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 24);
+    if (y > 200 && y > lastY + 4) nav.classList.add('hidden');
+    else if (y < lastY - 2 || y < 80) nav.classList.remove('hidden');
+    lastY = y; ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
+  }, { passive: true });
+
+  /* ───── reveal anim ───── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.10, rootMargin: "0px 0px -6% 0px" });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ───── language toggle ───── */
+  const langBtn = document.getElementById('langToggle');
+  const html = document.documentElement;
+  langBtn.addEventListener('click', () => {
+    const cur = html.getAttribute('data-lang') === 'zh' ? 'en' : 'zh';
+    html.setAttribute('data-lang', cur);
+    html.setAttribute('lang', cur === 'zh' ? 'zh-CN' : 'en');
+    langBtn.querySelectorAll('span[data-lang-btn]').forEach(s => {
+      s.classList.toggle('active', s.dataset.langBtn === cur);
+    });
+  });
+</script>
+
+</body>
+</html>

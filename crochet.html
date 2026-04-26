@@ -1,0 +1,791 @@
+<!doctype html>
+<html lang="zh-CN" data-lang="zh">
+<head>
+<meta charset="utf-8" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>钩针 · TEMPO</title>
+<link rel="icon" type="image/svg+xml" href="favicon.svg" />
+<link rel="preconnect" href="https://fonts.googleapis.com" />
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+<link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Liu+Jian+Mao+Cao&display=swap" rel="stylesheet" />
+<style>
+  :root {
+    /* paper & ink — section variant: 米白 */
+    --paper:        #F6EFE0;       /* 米白 */
+    --paper-deep:   #ECE2CC;
+    --paper-soft:   #FAF5E9;
+    --paper-warm:   #F0E5CD;
+    --ink:          #1B1714;
+    --ink-soft:     #4B4239;
+    --ink-faint:    #948575;
+    --rule:         #D9CDB6;
+
+    /* crochet accent palette: 米白 + 柔阳黄 + 棕 */
+    --accent:       #D5A93E;       /* 柔阳黄 */
+    --accent-deep:  #B58A28;
+    --accent-brown: #6B4226;       /* 棕 */
+    --accent-wash:  #EAD9A6;
+
+    /* type */
+    --serif-zh: "Noto Serif SC", "Songti SC", "STSong", serif;
+    --serif-en: "Cormorant Garamond", "Noto Serif SC", serif;
+    --hand:     "Liu Jian Mao Cao", "Noto Serif SC", cursive;
+
+    --max:  1180px;
+    --gut:  clamp(20px, 4vw, 56px);
+    --nav-h: 56px;
+  }
+
+  * { box-sizing: border-box; }
+  html, body { margin: 0; padding: 0; }
+  html { scroll-behavior: smooth; }
+  body {
+    background: var(--paper);
+    color: var(--ink);
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    -webkit-font-smoothing: antialiased;
+    text-rendering: optimizeLegibility;
+    line-height: 1.7;
+    overflow-x: hidden;
+  }
+  body::before {
+    content: "";
+    position: fixed; inset: 0;
+    pointer-events: none;
+    background-image:
+      radial-gradient(rgba(60,40,20,0.025) 1px, transparent 1px),
+      radial-gradient(rgba(60,40,20,0.018) 1px, transparent 1px);
+    background-size: 3px 3px, 5px 5px;
+    background-position: 0 0, 1px 2px;
+    mix-blend-mode: multiply;
+    z-index: 1;
+  }
+  a { color: inherit; text-decoration: none; }
+
+  /* ───────────── nav ───────────── */
+  .nav {
+    position: fixed; top: 0; left: 0; right: 0;
+    height: var(--nav-h);
+    display: flex; align-items: center;
+    padding: 0 var(--gut);
+    z-index: 50;
+    transition: transform .45s ease, background-color .45s ease, backdrop-filter .45s ease, border-color .45s ease;
+    border-bottom: 1px solid transparent;
+  }
+  .nav.scrolled {
+    background: rgba(246, 239, 224, 0.78);
+    backdrop-filter: blur(10px);
+    -webkit-backdrop-filter: blur(10px);
+    border-bottom-color: var(--rule);
+  }
+  .nav.hidden { transform: translateY(-100%); }
+  .nav-inner {
+    width: 100%; max-width: var(--max); margin: 0 auto;
+    display: flex; align-items: center; justify-content: space-between;
+    gap: 24px;
+  }
+  .brand {
+    font-family: var(--serif-en);
+    font-size: 18px; letter-spacing: 0.32em;
+    font-weight: 400; text-transform: uppercase;
+    color: var(--ink);
+  }
+  .brand .dot { display: inline-block; width: 5px; height: 5px;
+    background: var(--ink); border-radius: 50%;
+    transform: translateY(-2px); margin: 0 8px; }
+  .brand .zh { font-family: var(--serif-zh); letter-spacing: 0.4em; font-size: 14px; color: var(--ink-soft); }
+  .nav-links { display: flex; align-items: center; gap: 28px;
+    font-size: 13.5px; color: var(--ink-soft); font-weight: 400; }
+  .nav-links a { position: relative; padding: 4px 0; transition: color .25s ease; }
+  .nav-links a::after {
+    content: ""; position: absolute; left: 0; right: 0; bottom: -2px;
+    height: 1px; background: var(--ink);
+    transform: scaleX(0); transform-origin: left;
+    transition: transform .35s ease;
+  }
+  .nav-links a:hover { color: var(--ink); }
+  .nav-links a:hover::after { transform: scaleX(1); }
+  .nav-links a.is-active { color: var(--ink); }
+  .nav-links a.is-active::after { transform: scaleX(1); background: var(--accent-brown); }
+
+  .lang {
+    display: inline-flex; align-items: center; gap: 6px;
+    font-family: var(--serif-en); font-size: 12px;
+    letter-spacing: 0.2em; color: var(--ink-faint);
+    cursor: pointer; user-select: none;
+    border: none; background: none; padding: 4px 8px;
+  }
+  .lang span { transition: color .25s ease; }
+  .lang .active { color: var(--ink); }
+  .lang .sep { color: var(--ink-faint); }
+
+  /* ───────────── breadcrumb / section eyebrow ───────────── */
+  .crumb {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: calc(var(--nav-h) + 32px) var(--gut) 0;
+    display: flex; align-items: center; gap: 14px;
+    font-family: var(--serif-en);
+    font-size: 11.5px;
+    letter-spacing: 0.4em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+  .crumb a { transition: color .25s ease; }
+  .crumb a:hover { color: var(--ink); }
+  .crumb .sep { width: 18px; height: 1px; background: var(--ink-faint); display: inline-block; }
+
+  /* ───────────── hero ───────────── */
+  .hero {
+    max-width: var(--max);
+    margin: 0 auto;
+    padding: 6vh var(--gut) 12vh;
+    display: grid;
+    grid-template-columns: 1.1fr 1fr;
+    gap: clamp(40px, 6vw, 80px);
+    align-items: center;
+  }
+  .hero-art {
+    position: relative;
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    max-height: 78vh;
+    overflow: hidden;
+    background: var(--paper-soft);
+  }
+  .hero-art svg.wash { position: absolute; inset: 0; width: 100%; height: 100%; display: block; }
+
+  .section-mark {
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.5em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 22px;
+  }
+  .hero-title {
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    font-size: clamp(54px, 7.5vw, 96px);
+    line-height: 1;
+    letter-spacing: 0.5em;
+    margin: 0 0 12px;
+    color: var(--ink);
+  }
+  .hero-title-en {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-weight: 300;
+    font-size: clamp(20px, 2vw, 26px);
+    letter-spacing: 0.2em;
+    color: var(--ink-soft);
+    margin-bottom: 36px;
+  }
+  .hero-divider { width: 38px; height: 1px; background: var(--accent-brown); opacity: 0.6; margin: 0 0 28px; }
+  .hero-prose {
+    font-size: clamp(15px, 1.15vw, 17px);
+    line-height: 2.1;
+    color: var(--ink-soft);
+    max-width: 38ch;
+    font-weight: 300;
+  }
+  .hero-prose p + p { margin-top: 1.2em; }
+  .hero-prose .accent { font-family: var(--hand); font-size: 1.3em; color: var(--accent-brown); line-height: 1.5; }
+
+  /* ───────────── gallery ───────────── */
+  .gallery-head {
+    max-width: 880px;
+    margin: 6vh auto 4vh;
+    padding: 0 var(--gut);
+    display: flex; align-items: baseline; justify-content: space-between;
+    gap: 24px;
+  }
+  .gallery-head .label {
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    font-size: 18px;
+    letter-spacing: 0.5em;
+    margin: 0;
+  }
+  .gallery-head .meta {
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.4em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+  }
+
+  .gallery {
+    max-width: 1000px;
+    margin: 0 auto;
+    padding: 0 var(--gut) 16vh;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    column-gap: clamp(48px, 7vw, 110px);
+    row-gap: clamp(64px, 9vh, 110px);
+  }
+  .item {
+    display: block;
+    cursor: pointer;
+    width: 100%;
+    transition: transform .6s cubic-bezier(.2,.7,.2,1);
+  }
+  /* staircase: even items drop down a bit so the column is offset, like a museum hang */
+  .item:nth-child(even) { margin-top: clamp(40px, 8vh, 96px); }
+  .item:hover { transform: translateY(-3px); }
+  .item-img {
+    aspect-ratio: 4 / 5;
+    width: 100%;
+    overflow: hidden;
+    background: var(--paper-warm);
+    position: relative;
+  }
+  .item-img svg { width: 100%; height: 100%; display: block;
+    transition: transform 1.4s cubic-bezier(.2,.7,.2,1); }
+  .item:hover .item-img svg { transform: scale(1.04); }
+
+  .item-name {
+    margin: 22px 0 10px;
+    text-align: right;
+    font-family: var(--serif-zh);
+    font-weight: 400;
+    font-size: 19px;
+    letter-spacing: 0.4em;
+    color: var(--ink);
+  }
+  .item-name-en {
+    text-align: right;
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 13.5px;
+    letter-spacing: 0.18em;
+    color: var(--ink-faint);
+    margin-bottom: 18px;
+  }
+  .item-meta {
+    text-align: left;
+    font-family: var(--serif-en);
+    font-size: 11.5px;
+    letter-spacing: 0.32em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    line-height: 2;
+  }
+  .item-meta .zh-only { font-family: var(--serif-zh); letter-spacing: 0.3em; text-transform: none; font-size: 12px; }
+
+  /* ───────────── reveal anim ───────────── */
+  .reveal {
+    opacity: 0; transform: translateY(28px);
+    transition: opacity 1.1s ease, transform 1.1s cubic-bezier(.2,.7,.2,1);
+  }
+  .reveal.in { opacity: 1; transform: translateY(0); }
+  .reveal.delay-1 { transition-delay: .12s; }
+  .reveal.delay-2 { transition-delay: .24s; }
+  .reveal.delay-3 { transition-delay: .36s; }
+
+  /* ───────────── modal / detail ───────────── */
+  .modal {
+    position: fixed; inset: 0;
+    z-index: 100;
+    display: none;
+    background: rgba(27, 23, 20, 0.18);
+    backdrop-filter: blur(6px);
+    -webkit-backdrop-filter: blur(6px);
+    overflow-y: auto;
+    padding: clamp(20px, 4vw, 60px);
+  }
+  .modal.open { display: block; animation: fade .5s ease; }
+  @keyframes fade { from { opacity: 0; } to { opacity: 1; } }
+  .modal-shell {
+    max-width: 1120px;
+    margin: 0 auto;
+    background: var(--paper-soft);
+    position: relative;
+    box-shadow: 0 24px 80px -20px rgba(27,23,20,0.22), 0 8px 24px -8px rgba(27,23,20,0.10);
+    animation: rise .65s cubic-bezier(.2,.7,.2,1);
+  }
+  @keyframes rise { from { opacity: 0; transform: translateY(36px); } to { opacity: 1; transform: translateY(0); } }
+  .modal-close {
+    position: fixed;
+    top: clamp(28px, 4.5vw, 70px);
+    right: clamp(28px, 4.5vw, 70px);
+    z-index: 110;
+    width: 40px; height: 40px;
+    display: grid; place-items: center;
+    background: var(--paper);
+    border: 1px solid var(--rule);
+    border-radius: 50%;
+    cursor: pointer;
+    transition: background .25s ease, transform .25s ease, border-color .25s ease;
+    color: var(--ink);
+    font-family: var(--serif-en);
+    font-size: 18px;
+    line-height: 1;
+  }
+  .modal-close:hover { background: var(--ink); color: var(--paper); border-color: var(--ink); transform: rotate(90deg); }
+
+  .detail-hero {
+    aspect-ratio: 5 / 4;
+    width: 100%;
+    overflow: hidden;
+    background: var(--paper-warm);
+  }
+  .detail-hero svg { width: 100%; height: 100%; display: block; }
+
+  .detail-body {
+    padding: 12vh clamp(24px, 6vw, 96px) 8vh;
+    position: relative;
+    display: grid;
+    grid-template-columns: minmax(0, 1fr);
+    gap: 0;
+  }
+  .detail-eyebrow {
+    font-family: var(--serif-en);
+    font-size: 11px; letter-spacing: 0.5em;
+    color: var(--ink-faint);
+    text-transform: uppercase;
+    margin-bottom: 24px;
+  }
+  .detail-title {
+    font-family: var(--serif-zh);
+    font-weight: 300;
+    font-size: clamp(36px, 5vw, 56px);
+    letter-spacing: 0.3em;
+    margin: 0 0 12px;
+  }
+  .detail-title-en {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: clamp(18px, 2vw, 22px);
+    letter-spacing: 0.16em;
+    color: var(--ink-soft);
+    margin-bottom: 60px;
+  }
+
+  .detail-prose {
+    max-width: 56ch;
+    font-size: 16px;
+    line-height: 2.1;
+    color: var(--ink-soft);
+    position: relative;
+    margin: 0 auto;
+  }
+  .detail-prose p + p { margin-top: 1.4em; }
+  .detail-prose .pull {
+    font-family: var(--hand);
+    font-size: 1.4em;
+    color: var(--accent-brown);
+    line-height: 1.5;
+    margin: 1.6em 0;
+    text-align: center;
+  }
+
+  /* small accessory images on the side, escape the prose column */
+  .aside-img {
+    position: absolute;
+    width: clamp(120px, 14vw, 180px);
+    aspect-ratio: 3 / 4;
+    overflow: hidden;
+    background: var(--paper-warm);
+  }
+  .aside-img svg { width: 100%; height: 100%; display: block; }
+  .aside-left  { left:  calc(-1 * clamp(140px, 16vw, 220px)); top: 6vh; }
+  .aside-right { right: calc(-1 * clamp(140px, 16vw, 220px)); top: 28vh; }
+
+  .detail-foot {
+    margin: 14vh clamp(0px, 4vw, 24px) 0 0;
+    display: flex; flex-direction: column;
+    align-items: flex-start;
+    gap: 10px;
+  }
+  .detail-foot .rule { width: 60px; height: 1px; background: var(--accent-brown); opacity: 0.6; }
+  .detail-foot .destination {
+    font-family: var(--serif-en);
+    font-size: 12px;
+    letter-spacing: 0.36em;
+    color: var(--ink-soft);
+    text-transform: uppercase;
+  }
+  .detail-foot .destination .zh-only {
+    font-family: var(--serif-zh);
+    text-transform: none;
+    letter-spacing: 0.25em;
+    margin-right: 8px;
+    color: var(--ink);
+  }
+
+  /* ───────────── i18n ───────────── */
+  [data-lang="zh"] .en-only { display: none; }
+  [data-lang="en"] .zh-only { display: none; }
+  [data-lang="en"] body { font-family: var(--serif-en); }
+  [data-lang="en"] .nav-links a, [data-lang="en"] .hero-prose, [data-lang="en"] .detail-prose, [data-lang="en"] .item-meta {
+    font-family: var(--serif-en); letter-spacing: 0.02em;
+  }
+  [data-lang="en"] .hero-title, [data-lang="en"] .detail-title { display: none; }
+  [data-lang="en"] .hero-title-en, [data-lang="en"] .detail-title-en { font-style: normal; font-weight: 300; }
+  [data-lang="en"] .item-name { font-family: var(--serif-en); letter-spacing: 0.16em; font-size: 18px; font-style: italic; }
+  [data-lang="en"] .item-name-en { display: none; }
+  [data-lang="en"] .gallery-head .label { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
+  [data-lang="en"] .brand .zh { display: none; }
+
+  /* ───────────── responsive ───────────── */
+  @media (max-width: 880px) {
+    .hero { grid-template-columns: 1fr; padding-top: 0; gap: 36px; }
+    .hero-art { aspect-ratio: 4 / 4; max-height: 52vh; }
+    .gallery { grid-template-columns: 1fr; row-gap: 64px; }
+    .item { width: 100%; }
+    .item:nth-child(even) { margin-top: 0; }
+    .nav-links a:not(.lang-wrap) { display: none; }
+    .aside-left, .aside-right { display: none; }
+    .detail-body { padding: 8vh 24px 5vh; }
+  }
+</style>
+</head>
+<body>
+
+<!-- shared SVG defs -->
+<svg width="0" height="0" style="position:absolute" aria-hidden="true">
+  <defs>
+    <filter id="noise-soft" x="0" y="0" width="100%" height="100%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.85" numOctaves="2" seed="4" />
+      <feColorMatrix values="0 0 0 0 0.10
+                             0 0 0 0 0.09
+                             0 0 0 0 0.08
+                             0 0 0 0.05 0" />
+      <feComposite in2="SourceGraphic" operator="in" />
+    </filter>
+    <filter id="bleed-light" x="-10%" y="-10%" width="120%" height="120%">
+      <feTurbulence type="fractalNoise" baseFrequency="0.018" numOctaves="2" seed="5" />
+      <feDisplacementMap in="SourceGraphic" scale="9" />
+    </filter>
+  </defs>
+</svg>
+
+<!-- ──────────── nav ──────────── -->
+<nav class="nav" id="nav">
+  <div class="nav-inner">
+    <a href="index.html" class="brand" aria-label="TEMPO">
+      <span>TEMPO</span><span class="dot"></span><span class="zh">节奏</span>
+    </a>
+    <div class="nav-links">
+      <a href="photography.html"><span class="zh-only">摄影</span><span class="en-only">Photography</span></a>
+      <a href="days.html"><span class="zh-only">日子</span><span class="en-only">Days</span></a>
+      <a href="crochet.html" class="is-active"><span class="zh-only">钩针</span><span class="en-only">Crochet</span></a>
+      <a href="incense.html"><span class="zh-only">熏香</span><span class="en-only">Incense</span></a>
+      <a href="index.html#about"><span class="zh-only">关于</span><span class="en-only">About</span></a>
+      <button class="lang" id="langToggle" aria-label="language">
+        <span data-lang-btn="zh" class="active">中</span>
+        <span class="sep">/</span>
+        <span data-lang-btn="en">EN</span>
+      </button>
+    </div>
+  </div>
+</nav>
+
+<!-- ──────────── breadcrumb ──────────── -->
+<div class="crumb reveal">
+  <a href="index.html">TEMPO</a>
+  <span class="sep"></span>
+  <span><span class="zh-only">钩 针</span><span class="en-only">Crochet</span></span>
+</div>
+
+<!-- ──────────── hero ──────────── -->
+<header class="hero">
+  <div class="hero-art reveal">
+    <!-- abstract textile-toned wash, evoking yarn/fabric -->
+    <svg class="wash" viewBox="0 0 400 500" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
+      <defs>
+        <radialGradient id="g-yarn" cx="55%" cy="45%" r="65%">
+          <stop offset="0%"  stop-color="#F5E5B7"/>
+          <stop offset="55%" stop-color="#E2C682"/>
+          <stop offset="100%" stop-color="#B58A28"/>
+        </radialGradient>
+      </defs>
+      <rect width="400" height="500" fill="#EDE0BD"/>
+      <!-- yarn-ball suggestion -->
+      <g filter="url(#bleed-light)">
+        <circle cx="220" cy="260" r="160" fill="url(#g-yarn)" opacity="0.85"/>
+      </g>
+      <!-- thin yarn strands -->
+      <g stroke="#6B4226" stroke-width="0.7" fill="none" opacity="0.45">
+        <path d="M 60 260 q 80 -50 160 -10 q 80 40 130 -20"/>
+        <path d="M 80 290 q 70 -30 150 -5 q 80 25 140 -15"/>
+        <path d="M 100 320 q 60 -20 140 -5 q 80 15 130 -10"/>
+        <path d="M 120 350 q 60 -15 130 -5 q 70 10 120 -8"/>
+      </g>
+      <!-- a single trailing thread -->
+      <path d="M 380 240 q -30 60 -10 130 q 20 70 -20 130"
+            stroke="#6B4226" stroke-width="0.9" fill="none" opacity="0.55" />
+      <rect width="400" height="500" filter="url(#noise-soft)" opacity="0.6"/>
+    </svg>
+  </div>
+
+  <div class="hero-text">
+    <div class="section-mark reveal delay-1">III · Crochet</div>
+    <h1 class="hero-title reveal delay-1 zh-only">钩&nbsp;&nbsp;针</h1>
+    <div class="hero-title-en reveal delay-2">Crochet</div>
+    <div class="hero-divider reveal delay-2"></div>
+    <div class="hero-prose reveal delay-3">
+      <div class="zh-only">
+        <p>一根线，<br/>从指尖开始，<br/>慢慢长成一件东西。</p>
+        <p>我喜欢这种——<br/>能用手摸到时间的事。</p>
+        <p class="accent">把日子打成结，<br/>反而能松开心里的某一处。</p>
+      </div>
+      <div class="en-only">
+        <p>A single thread,<br/>growing from my fingertips,<br/>slowly into something whole.</p>
+        <p>I love this kind of thing—<br/>where time can be touched.</p>
+        <p class="accent">Knotting the days,<br/>somehow loosens something inside.</p>
+      </div>
+    </div>
+  </div>
+</header>
+
+<!-- ──────────── gallery ──────────── -->
+<section>
+  <div class="gallery-head">
+    <h2 class="label reveal">
+      <span class="zh-only">作&nbsp;&nbsp;品</span>
+      <span class="en-only">Works</span>
+    </h2>
+    <div class="meta reveal delay-1">— 06 —</div>
+  </div>
+
+  <div class="gallery" id="gallery"></div>
+</section>
+
+<!-- ──────────── modal ──────────── -->
+<div class="modal" id="modal" role="dialog" aria-modal="true">
+  <button class="modal-close" id="modalClose" aria-label="close">×</button>
+  <div class="modal-shell" id="modalShell"></div>
+</div>
+
+<script>
+  /* ───── data ───── */
+  /* swatch: pairs of background + foreground hues for placeholder textile blocks */
+  const swatches = [
+    { bg: "#E8DFC8", fg: "#C9A26F" }, /* warm wheat */
+    { bg: "#E3D5C3", fg: "#A56A4A" }, /* dust mauve */
+    { bg: "#DEDDC9", fg: "#7A8367" }, /* sage */
+    { bg: "#EBDFD0", fg: "#B58A28" }, /* honey */
+    { bg: "#E6D6C5", fg: "#8C5A3D" }, /* terracotta-cream */
+    { bg: "#D8D8D2", fg: "#5A5547" }  /* pebble */
+  ];
+
+  function placeholderSVG(seed, w=400, h=500, swatch){
+    const s = swatch || swatches[seed % swatches.length];
+    return `
+      <svg viewBox="0 0 ${w} ${h}" preserveAspectRatio="xMidYMid slice" xmlns="http://www.w3.org/2000/svg">
+        <defs>
+          <filter id="n-${seed}"><feTurbulence type="fractalNoise" baseFrequency="0.9" numOctaves="2" seed="${seed}"/>
+            <feColorMatrix values="0 0 0 0 0.10  0 0 0 0 0.09  0 0 0 0 0.08  0 0 0 0.05 0"/>
+            <feComposite in2="SourceGraphic" operator="in"/></filter>
+          <filter id="b-${seed}" x="-10%" y="-10%" width="120%" height="120%">
+            <feTurbulence type="fractalNoise" baseFrequency="0.02" numOctaves="2" seed="${seed*3}"/>
+            <feDisplacementMap in="SourceGraphic" scale="10"/></filter>
+          <radialGradient id="g-${seed}" cx="${40+seed*4}%" cy="${50+seed*2}%" r="70%">
+            <stop offset="0%" stop-color="${s.fg}" stop-opacity="0.85"/>
+            <stop offset="100%" stop-color="${s.fg}" stop-opacity="0.15"/>
+          </radialGradient>
+        </defs>
+        <rect width="${w}" height="${h}" fill="${s.bg}"/>
+        <g filter="url(#b-${seed})">
+          <ellipse cx="${w*0.5}" cy="${h*0.55}" rx="${w*0.42}" ry="${h*0.36}" fill="url(#g-${seed})"/>
+        </g>
+        <g stroke="${s.fg}" stroke-width="0.6" fill="none" opacity="0.45">
+          <path d="M ${w*0.2} ${h*0.6} q ${w*0.2} -${h*0.1} ${w*0.4} 0 q ${w*0.2} ${h*0.1} ${w*0.3} -${h*0.05}"/>
+          <path d="M ${w*0.18} ${h*0.65} q ${w*0.2} -${h*0.06} ${w*0.4} 0 q ${w*0.2} ${h*0.06} ${w*0.3} -${h*0.04}"/>
+        </g>
+        <rect width="${w}" height="${h}" filter="url(#n-${seed})" opacity="0.55"/>
+      </svg>`;
+  }
+
+  const works = [
+    { id:"cloud",    nameZh:"云朵围巾",   nameEn:"Cloud Scarf",
+      dateZh:"2024 · 冬", dateEn:"Winter 2024",
+      destZh:"自留", destEn:"kept",
+      seed: 1,
+      proseZh:[
+        "去年最冷的那两个月，每天晚上钩两行。",
+        "不为什么，<br/>就是手要做点事，心才能停下来。",
+        "线很轻，灰白带一点雾蓝。<br/>钩到一半的时候，<br/>窗外正好下了第一场雪。",
+        "<span class=\"pull\">围着它，像把一段安静的日子<br/>挂在脖子上。</span>"
+      ],
+      proseEn:[
+        "Through the coldest two months last year, two rows every night.",
+        "Not for any reason—<br/>my hands needed something to do,<br/>so my mind could rest.",
+        "The yarn is light, off-white with a hint of fog blue.<br/>When I was halfway through,<br/>the first snow fell outside.",
+        "<span class=\"pull\">Wrapping it on feels like wearing<br/>a quiet stretch of days.</span>"
+      ]
+    },
+    { id:"truffle",  nameZh:"松露小包",   nameEn:"Truffle Bag",
+      dateZh:"2024 · 秋", dateEn:"Autumn 2024",
+      destZh:"送给 J", destEn:"gift to J",
+      seed: 2,
+      proseZh:[
+        "J 说她想要一个能装下一本小书、一支口红、一把钥匙的小包。",
+        "我用了焦糖色的羊毛线，<br/>钩成松露的形状——圆圆的，凹凸不平。",
+        "<span class=\"pull\">手作的礼物总比买来的更慢，<br/>慢得让人愿意等。</span>"
+      ],
+      proseEn:[
+        "J said she wanted a bag that could hold a small book, a lipstick, and a key.",
+        "I used a caramel wool,<br/>shaped it like a truffle—round and bumpy.",
+        "<span class=\"pull\">Handmade gifts are always slower than bought ones,<br/>slow enough that someone is willing to wait.</span>"
+      ]
+    },
+    { id:"tea",      nameZh:"茶席杯垫",   nameEn:"Tea Coasters",
+      dateZh:"2025 · 春", dateEn:"Spring 2025",
+      destZh:"卖出 · ¥180", destEn:"sold · ¥180",
+      seed: 3,
+      proseZh:[
+        "一组六片，每片不到掌心大。",
+        "钩的时候在听一段宋代的雅集纪录，<br/>线下针脚也跟着慢下来。",
+        "<span class=\"pull\">茶到了，垫好；<br/>茶走了，杯垫还在那儿。</span>"
+      ],
+      proseEn:[
+        "A set of six, each smaller than a palm.",
+        "I crocheted them while listening to a recording about a Song-dynasty tea gathering,<br/>and my stitches slowed in time.",
+        "<span class=\"pull\">When the tea arrives, the coaster is set;<br/>when the tea goes, the coaster stays.</span>"
+      ]
+    },
+    { id:"cherry",   nameZh:"樱桃发圈",   nameEn:"Cherry Hair Tie",
+      dateZh:"2025 · 春", dateEn:"Spring 2025",
+      destZh:"装饰", destEn:"decoration",
+      seed: 4,
+      proseZh:[
+        "一对小小的樱桃，挂在一根细圈上。",
+        "做完那天，<br/>正好碰上楼下的早樱开了一半。"
+      ],
+      proseEn:[
+        "A pair of tiny cherries, hung on a thin loop.",
+        "The day I finished,<br/>the early cherry blossoms downstairs<br/>were just half-open."
+      ]
+    },
+    { id:"corduroy", nameZh:"灯芯绒挂毯", nameEn:"Corduroy Wall Hanging",
+      dateZh:"2025 · 夏", dateEn:"Summer 2025",
+      destZh:"自留", destEn:"kept",
+      seed: 5,
+      proseZh:[
+        "做这件的时候没看图样。<br/>一边钩一边看它要长成什么。",
+        "<span class=\"pull\">挂在床头那面墙上，<br/>有种被自己安顿好的感觉。</span>"
+      ],
+      proseEn:[
+        "I didn't follow a pattern this time.<br/>I crocheted and watched it become what it wanted to be.",
+        "<span class=\"pull\">Hung on the wall above the bed—<br/>a feeling of being settled by my own hands.</span>"
+      ]
+    },
+    { id:"snow",     nameZh:"初雪披肩",   nameEn:"First Snow Shawl",
+      dateZh:"2024 · 冬", dateEn:"Winter 2024",
+      destZh:"送给妈妈", destEn:"gift to mom",
+      seed: 6,
+      proseZh:[
+        "最纯的羊驼线，奶白色。",
+        "妈妈不太收手作礼物——<br/>她说我做的东西看着费眼睛。<br/>但这件她真的披在了肩上。",
+        "<span class=\"pull\">大概所有的妈妈，<br/>都会偷偷喜欢女儿做的东西。</span>"
+      ],
+      proseEn:[
+        "Pure alpaca yarn, the color of cream.",
+        "Mom rarely accepts handmade gifts—<br/>she says they look hard on my eyes.<br/>But this one, she actually wore.",
+        "<span class=\"pull\">All mothers, I think,<br/>secretly love what their daughters make.</span>"
+      ]
+    },
+  ];
+
+  /* ───── render gallery ───── */
+  const galleryEl = document.getElementById("gallery");
+  works.forEach((w, i) => {
+    const a = document.createElement("a");
+    a.className = "item reveal";
+    a.dataset.id = w.id;
+    a.innerHTML = `
+      <div class="item-img">${placeholderSVG(w.seed, 400, 500, swatches[i % swatches.length])}</div>
+      <div class="item-name"><span class="zh-only">${w.nameZh}</span><span class="en-only">${w.nameEn}</span></div>
+      <div class="item-name-en zh-only">${w.nameEn}</div>
+      <div class="item-meta">
+        <div><span class="zh-only">${w.dateZh}</span><span class="en-only">${w.dateEn}</span></div>
+        <div><span class="zh-only">${w.destZh}</span><span class="en-only">${w.destEn}</span></div>
+      </div>
+    `;
+    a.addEventListener("click", (e) => { e.preventDefault(); openModal(w); });
+    galleryEl.appendChild(a);
+  });
+
+  /* ───── modal ───── */
+  const modal = document.getElementById("modal");
+  const shell = document.getElementById("modalShell");
+  const closeBtn = document.getElementById("modalClose");
+
+  function openModal(w) {
+    const proseZh = w.proseZh.map(p => `<p>${p}</p>`).join("");
+    const proseEn = w.proseEn.map(p => `<p>${p}</p>`).join("");
+    shell.innerHTML = `
+      <div class="detail-hero">${placeholderSVG(w.seed * 11, 1000, 700, swatches[(w.seed-1) % swatches.length])}</div>
+      <div class="detail-body">
+        <div class="detail-eyebrow">crochet · 0${w.seed}</div>
+        <h2 class="detail-title zh-only">${w.nameZh}</h2>
+        <div class="detail-title-en">${w.nameEn}</div>
+
+        <div class="detail-prose">
+          <div class="aside-img aside-left">${placeholderSVG(w.seed * 7 + 1, 240, 320, swatches[(w.seed) % swatches.length])}</div>
+          <div class="aside-img aside-right">${placeholderSVG(w.seed * 13 + 5, 240, 320, swatches[(w.seed+2) % swatches.length])}</div>
+
+          <div class="zh-only">${proseZh}</div>
+          <div class="en-only">${proseEn}</div>
+        </div>
+
+        <div class="detail-foot">
+          <div class="rule"></div>
+          <div class="destination">
+            <span class="zh-only">去向</span><span class="en-only">destination —</span>
+            <span class="zh-only">${w.destZh}</span><span class="en-only">${w.destEn}</span>
+          </div>
+          <div class="destination">
+            <span class="zh-only">完成于</span><span class="en-only">completed —</span>
+            <span class="zh-only">${w.dateZh}</span><span class="en-only">${w.dateEn}</span>
+          </div>
+        </div>
+      </div>
+    `;
+    modal.classList.add("open");
+    document.body.style.overflow = "hidden";
+  }
+  function closeModal(){ modal.classList.remove("open"); document.body.style.overflow = ""; shell.innerHTML = ""; }
+  closeBtn.addEventListener("click", closeModal);
+  modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
+  document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
+
+  /* ───── nav scroll behavior ───── */
+  const nav = document.getElementById('nav');
+  let lastY = 0; let ticking = false;
+  function onScroll() {
+    const y = window.scrollY;
+    nav.classList.toggle('scrolled', y > 24);
+    if (y > 200 && y > lastY + 4) nav.classList.add('hidden');
+    else if (y < lastY - 2 || y < 80) nav.classList.remove('hidden');
+    lastY = y; ticking = false;
+  }
+  window.addEventListener('scroll', () => {
+    if (!ticking) { requestAnimationFrame(onScroll); ticking = true; }
+  }, { passive: true });
+
+  /* ───── reveal anim ───── */
+  const io = new IntersectionObserver((entries) => {
+    entries.forEach(e => {
+      if (e.isIntersecting) { e.target.classList.add('in'); io.unobserve(e.target); }
+    });
+  }, { threshold: 0.12, rootMargin: "0px 0px -8% 0px" });
+  document.querySelectorAll('.reveal').forEach(el => io.observe(el));
+
+  /* ───── language toggle ───── */
+  const langBtn = document.getElementById('langToggle');
+  const html = document.documentElement;
+  langBtn.addEventListener('click', () => {
+    const cur = html.getAttribute('data-lang') === 'zh' ? 'en' : 'zh';
+    html.setAttribute('data-lang', cur);
+    html.setAttribute('lang', cur === 'zh' ? 'zh-CN' : 'en');
+    langBtn.querySelectorAll('span[data-lang-btn]').forEach(s => {
+      s.classList.toggle('active', s.dataset.langBtn === cur);
+    });
+  });
+</script>
+
+</body>
+</html>
