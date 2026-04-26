@@ -29,10 +29,20 @@
     --serif-en: "Cormorant Garamond", "Noto Serif SC", serif;
     --hand:     "Liu Jian Mao Cao", "Noto Serif SC", cursive;
     --hand-2:   "Long Cang", "Noto Serif SC", cursive;
+    --hand-jl:  "JingLei", "Noto Serif SC", "STKaiti", serif;
 
     --max:  1280px;
     --gut:  clamp(20px, 4vw, 56px);
     --nav-h: 56px;
+  }
+
+  /* 方正静蕾简体（子集化）— 长篇手写笔记专用 */
+  @font-face {
+    font-family: "JingLei";
+    src: url("fonts/jinglei.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
   }
 
   * { box-sizing: border-box; }
@@ -281,6 +291,14 @@
   }
   .entry:hover .entry-art { transform: translateY(-3px); }
   .entry-art svg { width: 100%; height: 100%; display: block; }
+  .entry-art video {
+    width: 100%; height: 100%;
+    display: block;
+    object-fit: cover;
+    background: var(--ink);
+  }
+  .entry-art.is-video { transition: none; }
+  .entry-art.is-video:hover { transform: none; }
 
   /* play hint — a faint circle in lower-right */
   .entry-art .play {
@@ -332,6 +350,26 @@
     margin-top: 4px;
   }
   [data-lang="en"] .entry-note { font-family: var(--serif-en); font-style: italic; font-size: 15px; color: var(--accent-deep); letter-spacing: 0.04em; }
+
+  /* 长篇手写笔记 — 静蕾体（清晰、可读，比 Liu Jian Mao Cao 易读） */
+  .entry-note-long {
+    font-family: var(--hand-jl);
+    font-size: 16.5px;
+    color: var(--ink-soft);
+    line-height: 2;
+    letter-spacing: 0.03em;
+    margin-top: 6px;
+  }
+  .entry-note-long p {
+    margin: 0 0 0.85em 0;
+  }
+  .entry-note-long p:last-child { margin-bottom: 0; }
+  [data-lang="en"] .entry-note-long {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.85;
+  }
 
   .entry-place {
     display: inline-flex; align-items: center; gap: 10px;
@@ -723,6 +761,28 @@
   ───────────────────────────────────────── */
   const entries = [
     {
+      date: "2026.04.25",
+      video: "videos/0425.mp4",
+      poster: "videos/0425-poster.jpg",
+      titleZh: "致童年好友的结婚祝福",
+      titleEn: "A wedding wish for a childhood friend",
+      noteLongZh: [
+        "这是我童年时最爱的朋友，友情始于我降生前。她可爱、勇敢、率真，和我大概是硬币的两面吧。她无忧无虑，我忧虑多思；她天真烂漫，我敏感多情；她只关注自己的生活，我思天地想史哲独独容易丢掉自己的每一天。",
+        "想想已有多年未见了，为着海外跨越重洋的距离。给她录视频的时候，我没想过我会如此地腼腆，因为我不知道我在她的人生里是否还有从前的重量。",
+        "我们失去了很多可以说给彼此的话。",
+        "她的人生来到了崭新的一个篇章。好吧，只要她幸福，就好了。"
+      ],
+      noteLongEn: [
+        "She was my dearest friend in childhood — our friendship began before I was born. She was playful, brave, candid; the two of us were probably two sides of the same coin. She was carefree, I was full of worry; she was ingenuous, I was tender and overthinking; she stayed close to her own life, while I lost myself reaching for the world.",
+        "It's been many years now — an ocean between us. Recording the video for her, I didn't expect to feel so shy. I didn't know how much weight I still carried in her life.",
+        "We've lost so much of what we used to say to each other.",
+        "Her life is opening a new chapter. Well — as long as she's happy, that's enough."
+      ],
+      placeZh: "纪念",
+      placeEn: "for keeping",
+      noLinks: true,
+    },
+    {
       date: "2025.04.18",
       scene: "raincoffee",
       titleZh: "下雨的早上，喝两杯咖啡",
@@ -829,23 +889,46 @@
     node.className = "entry reveal" + (i % 2 ? " flip" : "");
     if (i % 3 === 1) node.classList.add("delay-1");
     if (i % 3 === 2) node.classList.add("delay-2");
+
+    // ── art block: inline video player OR svg thumbnail link ──
+    const artHTML = e.video
+      ? `<div class="entry-art is-video" aria-label="${e.titleZh}">
+           <video controls preload="metadata" playsinline poster="${e.poster}">
+             <source src="${e.video}" type="video/mp4" />
+           </video>
+         </div>`
+      : `<a class="entry-art" href="${e.bili}" target="_blank" rel="noopener" aria-label="${e.titleZh}">
+           ${placeholderSVG(e.scene)}
+           <span class="play" aria-hidden="true"></span>
+         </a>`;
+
+    // ── note block: long paragraphs (静蕾体) OR single short note ──
+    const noteHTML = e.noteLongZh
+      ? `<div class="entry-note-long">
+           <span class="zh-only">${e.noteLongZh.map(p => `<p>${p}</p>`).join("")}</span>
+           <span class="en-only">${e.noteLongEn.map(p => `<p>${p}</p>`).join("")}</span>
+         </div>`
+      : `<p class="entry-note"><span class="zh-only">${e.noteZh}</span><span class="en-only">${e.noteEn}</span></p>`;
+
+    // ── links block (skip for entries marked noLinks) ──
+    const linksHTML = e.noLinks
+      ? ``
+      : `<div class="entry-links">
+           <a class="link-btn" href="${e.bili}" target="_blank" rel="noopener">
+             <span><span class="zh-only">B站观看</span><span class="en-only">watch on Bilibili</span></span>
+             <span class="arrow">→</span>
+           </a>
+           <a class="link-secondary" href="${e.xhs}" target="_blank" rel="noopener"><span class="zh-only">小红书</span><span class="en-only">also on Xiaohongshu</span></a>
+         </div>`;
+
     node.innerHTML = `
-      <a class="entry-art" href="${e.bili}" target="_blank" rel="noopener" aria-label="${e.titleZh}">
-        ${placeholderSVG(e.scene)}
-        <span class="play" aria-hidden="true"></span>
-      </a>
+      ${artHTML}
       <div class="entry-text">
         <span class="entry-date">${e.date}</span>
         <h3 class="entry-title"><span class="zh-only">${e.titleZh}</span><span class="en-only">${e.titleEn}</span></h3>
-        <p class="entry-note"><span class="zh-only">${e.noteZh}</span><span class="en-only">${e.noteEn}</span></p>
+        ${noteHTML}
         <span class="entry-place"><span class="zh-only">${e.placeZh}</span><span class="en-only">${e.placeEn}</span></span>
-        <div class="entry-links">
-          <a class="link-btn" href="${e.bili}" target="_blank" rel="noopener">
-            <span><span class="zh-only">B站观看</span><span class="en-only">watch on Bilibili</span></span>
-            <span class="arrow">→</span>
-          </a>
-          <a class="link-secondary" href="${e.xhs}" target="_blank" rel="noopener"><span class="zh-only">小红书</span><span class="en-only">also on Xiaohongshu</span></a>
-        </div>
+        ${linksHTML}
       </div>
     `;
     feedEl.appendChild(node);
