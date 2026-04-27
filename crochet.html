@@ -239,9 +239,10 @@
     background: var(--paper-warm);
     position: relative;
   }
-  .item-img svg { width: 100%; height: 100%; display: block;
+  .item-img svg, .item-img img { width: 100%; height: 100%; display: block;
     transition: transform 1.4s cubic-bezier(.2,.7,.2,1); }
-  .item:hover .item-img svg { transform: scale(1.04); }
+  .item-img img { object-fit: cover; }
+  .item:hover .item-img svg, .item:hover .item-img img { transform: scale(1.04); }
 
   .item-name {
     margin: 22px 0 10px;
@@ -329,7 +330,8 @@
     overflow: hidden;
     background: var(--paper-warm);
   }
-  .detail-hero svg { width: 100%; height: 100%; display: block; }
+  .detail-hero svg, .detail-hero img { width: 100%; height: 100%; display: block; }
+  .detail-hero img { object-fit: cover; }
 
   .detail-body {
     padding: 12vh clamp(24px, 6vw, 96px) 8vh;
@@ -387,9 +389,11 @@
     overflow: hidden;
     background: var(--paper-warm);
   }
-  .aside-img svg { width: 100%; height: 100%; display: block; }
+  .aside-img svg, .aside-img img { width: 100%; height: 100%; display: block; }
+  .aside-img img { object-fit: cover; }
   .aside-left  { left:  calc(-1 * clamp(140px, 16vw, 220px)); top: 6vh; }
   .aside-right { right: calc(-1 * clamp(140px, 16vw, 220px)); top: 28vh; }
+  .aside-bottom { left:  calc(-1 * clamp(140px, 16vw, 220px)); top: 60vh; }
 
   .detail-foot {
     margin: 14vh clamp(0px, 4vw, 24px) 0 0;
@@ -600,6 +604,33 @@
   }
 
   const works = [
+    { id:"carnation", nameZh:"康乃馨花束杯垫", nameEn:"Carnation Bouquet Coasters",
+      dateZh:"2026 · 春", dateEn:"Spring 2026",
+      destZh:"自留，送友", destEn:"kept · gifted",
+      seed: 7,
+      image: "images/carnation-coasters-main.jpg",
+      gallery: [
+        "images/carnation-coasters-cup.jpg",
+        "images/carnation-coasters-pair.jpg",
+        "images/carnation-coasters-yarn.jpg"
+      ],
+      proseZh:[
+        "<span class=\"pull\">起点。</span>",
+        "这是我钩针的起点，<br/>我看到花在我的指尖展开。",
+        "钩织第一个的时候，针目错过了不少，<br/>又在绞尽脑汁的挽救下<br/>变成了刚刚好嵌合我杯子的形状。<br/>小小的错误变成了它的独特。",
+        "起初手劲太紧，线被勒到没有余裕让针穿过，<br/>想要放松一些线又会从针上脱落。<br/>&ldquo;怎么能有那样松紧自如的手感呢？<br/>这是需要多少经年累月的练习呢？&rdquo;",
+        "可是在我钩第二个的时候，<br/>我就找到了这样的手感。<br/>嗯，世界真的是草台班子，<br/>我们用几个小时就可以掌握一项简单的技能。",
+        "那我想，<br/>也许我很快就能设计出自己的第一个作品吧。"
+      ],
+      proseEn:[
+        "<span class=\"pull\">A beginning.</span>",
+        "This is where my crochet begins—<br/>I watched a flower open between my fingertips.",
+        "On my first one I dropped more than a few stitches,<br/>and patched them up so frantically<br/>that the piece ended up shaped to fit my cup exactly.<br/>The little mistakes became what made it particular.",
+        "At first I gripped the yarn too tight—<br/>pulled so taut the hook couldn&rsquo;t pass through.<br/>Loosen up a little, and the loop would slip off the needle.<br/>&ldquo;How does anyone find that easy give-and-take in the hands?<br/>How many years of practice does that take?&rdquo;",
+        "But by the second one,<br/>I had found that touch.<br/>So the world really is held together with sticky tape—<br/>a few hours, and you can pick up a simple skill.",
+        "So I thought:<br/>maybe before long, I&rsquo;ll be ready<br/>to design something of my own."
+      ]
+    },
     { id:"cloud",    nameZh:"云朵围巾",   nameEn:"Cloud Scarf",
       dateZh:"2024 · 冬", dateEn:"Winter 2024",
       destZh:"自留", destEn:"kept",
@@ -696,8 +727,11 @@
     const a = document.createElement("a");
     a.className = "item reveal";
     a.dataset.id = w.id;
+    const thumb = w.image
+      ? `<img src="${w.image}" alt="${w.nameZh} / ${w.nameEn}" loading="lazy" />`
+      : placeholderSVG(w.seed, 400, 500, swatches[i % swatches.length]);
     a.innerHTML = `
-      <div class="item-img">${placeholderSVG(w.seed, 400, 500, swatches[i % swatches.length])}</div>
+      <div class="item-img">${thumb}</div>
       <div class="item-name"><span class="zh-only">${w.nameZh}</span><span class="en-only">${w.nameEn}</span></div>
       <div class="item-name-en zh-only">${w.nameEn}</div>
       <div class="item-meta">
@@ -717,16 +751,30 @@
   function openModal(w) {
     const proseZh = w.proseZh.map(p => `<p>${p}</p>`).join("");
     const proseEn = w.proseEn.map(p => `<p>${p}</p>`).join("");
+    const heroEl = w.image
+      ? `<img src="${w.image}" alt="${w.nameZh} / ${w.nameEn}" />`
+      : placeholderSVG(w.seed * 11, 1000, 700, swatches[(w.seed-1) % swatches.length]);
+    const gallery = w.gallery || [];
+    const asideLeftEl = gallery[0]
+      ? `<img src="${gallery[0]}" alt="" />`
+      : placeholderSVG(w.seed * 7 + 1, 240, 320, swatches[(w.seed) % swatches.length]);
+    const asideRightEl = gallery[1]
+      ? `<img src="${gallery[1]}" alt="" />`
+      : placeholderSVG(w.seed * 13 + 5, 240, 320, swatches[(w.seed+2) % swatches.length]);
+    const asideBottomEl = gallery[2]
+      ? `<div class="aside-img aside-bottom"><img src="${gallery[2]}" alt="" /></div>`
+      : "";
     shell.innerHTML = `
-      <div class="detail-hero">${placeholderSVG(w.seed * 11, 1000, 700, swatches[(w.seed-1) % swatches.length])}</div>
+      <div class="detail-hero">${heroEl}</div>
       <div class="detail-body">
         <div class="detail-eyebrow">crochet · 0${w.seed}</div>
         <h2 class="detail-title zh-only">${w.nameZh}</h2>
         <div class="detail-title-en">${w.nameEn}</div>
 
         <div class="detail-prose">
-          <div class="aside-img aside-left">${placeholderSVG(w.seed * 7 + 1, 240, 320, swatches[(w.seed) % swatches.length])}</div>
-          <div class="aside-img aside-right">${placeholderSVG(w.seed * 13 + 5, 240, 320, swatches[(w.seed+2) % swatches.length])}</div>
+          <div class="aside-img aside-left">${asideLeftEl}</div>
+          <div class="aside-img aside-right">${asideRightEl}</div>
+          ${asideBottomEl}
 
           <div class="zh-only">${proseZh}</div>
           <div class="en-only">${proseEn}</div>
