@@ -9,6 +9,14 @@
 <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
 <link href="https://fonts.googleapis.com/css2?family=Noto+Serif+SC:wght@300;400;500;600&family=Cormorant+Garamond:ital,wght@0,300;0,400;0,500;1,300;1,400&family=Liu+Jian+Mao+Cao&display=swap" rel="stylesheet" />
 <style>
+  /* 方正硬笔行书 — handwritten running-script for prose body */
+  @font-face {
+    font-family: "FZ YingBi XingShu";
+    src: url("fonts/xingshu.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
   :root {
     /* paper & ink — section variant: 米白 */
     --paper:        #F6EFE0;       /* 米白 */
@@ -30,6 +38,7 @@
     --serif-zh: "Noto Serif SC", "Songti SC", "STSong", serif;
     --serif-en: "Cormorant Garamond", "Noto Serif SC", serif;
     --hand:     "Liu Jian Mao Cao", "Noto Serif SC", cursive;
+    --hand-xs:  "FZ YingBi XingShu", "Liu Jian Mao Cao", "Noto Serif SC", cursive;
 
     --max:  1180px;
     --gut:  clamp(20px, 4vw, 56px);
@@ -241,7 +250,9 @@
   }
   .item-img svg, .item-img img { width: 100%; height: 100%; display: block;
     transition: transform 1.4s cubic-bezier(.2,.7,.2,1); }
-  .item-img img { object-fit: cover; }
+  /* when the work has a real photo, drop the forced 4:5 box so nothing is cropped */
+  .item-img.has-image { aspect-ratio: auto; background: transparent; }
+  .item-img.has-image img { height: auto; object-fit: contain; }
   .item:hover .item-img svg, .item:hover .item-img img { transform: scale(1.04); }
 
   .item-name {
@@ -332,6 +343,9 @@
   }
   .detail-hero svg, .detail-hero img { width: 100%; height: 100%; display: block; }
   .detail-hero img { object-fit: cover; }
+  /* hero with real photo: drop the forced 5:4 box so nothing is cropped */
+  .detail-hero.has-image { aspect-ratio: auto; background: transparent; }
+  .detail-hero.has-image img { height: auto; object-fit: contain; }
 
   .detail-body {
     padding: 12vh clamp(24px, 6vw, 96px) 8vh;
@@ -365,13 +379,15 @@
 
   .detail-prose {
     max-width: 56ch;
-    font-size: 16px;
-    line-height: 2.1;
+    font-family: var(--hand-xs);
+    font-size: 22px;
+    letter-spacing: 0.04em;
+    line-height: 2.0;
     color: var(--ink-soft);
     position: relative;
     margin: 0 auto;
   }
-  .detail-prose p + p { margin-top: 1.4em; }
+  .detail-prose p + p { margin-top: 1.2em; }
   .detail-prose .pull {
     font-family: var(--hand);
     font-size: 1.4em;
@@ -391,6 +407,9 @@
   }
   .aside-img svg, .aside-img img { width: 100%; height: 100%; display: block; }
   .aside-img img { object-fit: cover; }
+  /* aside with real photo: drop the forced 3:4 box so nothing is cropped */
+  .aside-img.has-image { aspect-ratio: auto; background: transparent; }
+  .aside-img.has-image img { height: auto; object-fit: contain; }
   .aside-left  { left:  calc(-1 * clamp(140px, 16vw, 220px)); top: 6vh; }
   .aside-right { right: calc(-1 * clamp(140px, 16vw, 220px)); top: 28vh; }
   .aside-bottom { left:  calc(-1 * clamp(140px, 16vw, 220px)); top: 60vh; }
@@ -608,11 +627,11 @@
       dateZh:"2026 · 春", dateEn:"Spring 2026",
       destZh:"自留，送友", destEn:"kept · gifted",
       seed: 7,
-      image: "images/carnation-coasters-main.jpg",
+      image: "images/carnation-coasters-yarn.jpg",
       gallery: [
         "images/carnation-coasters-cup.jpg",
-        "images/carnation-coasters-pair.jpg",
-        "images/carnation-coasters-yarn.jpg"
+        "images/carnation-coasters-main.jpg",
+        "images/carnation-coasters-pair.jpg"
       ],
       proseZh:[
         "<span class=\"pull\">起点。</span>",
@@ -730,8 +749,9 @@
     const thumb = w.image
       ? `<img src="${w.image}" alt="${w.nameZh} / ${w.nameEn}" loading="lazy" />`
       : placeholderSVG(w.seed, 400, 500, swatches[i % swatches.length]);
+    const imgClass = w.image ? "item-img has-image" : "item-img";
     a.innerHTML = `
-      <div class="item-img">${thumb}</div>
+      <div class="${imgClass}">${thumb}</div>
       <div class="item-name"><span class="zh-only">${w.nameZh}</span><span class="en-only">${w.nameEn}</span></div>
       <div class="item-name-en zh-only">${w.nameEn}</div>
       <div class="item-meta">
@@ -754,6 +774,7 @@
     const heroEl = w.image
       ? `<img src="${w.image}" alt="${w.nameZh} / ${w.nameEn}" />`
       : placeholderSVG(w.seed * 11, 1000, 700, swatches[(w.seed-1) % swatches.length]);
+    const heroClass = w.image ? "detail-hero has-image" : "detail-hero";
     const gallery = w.gallery || [];
     const asideLeftEl = gallery[0]
       ? `<img src="${gallery[0]}" alt="" />`
@@ -762,18 +783,20 @@
       ? `<img src="${gallery[1]}" alt="" />`
       : placeholderSVG(w.seed * 13 + 5, 240, 320, swatches[(w.seed+2) % swatches.length]);
     const asideBottomEl = gallery[2]
-      ? `<div class="aside-img aside-bottom"><img src="${gallery[2]}" alt="" /></div>`
+      ? `<div class="aside-img aside-bottom${gallery[2] ? ' has-image' : ''}"><img src="${gallery[2]}" alt="" /></div>`
       : "";
+    const asideLeftClass = gallery[0] ? "aside-img aside-left has-image" : "aside-img aside-left";
+    const asideRightClass = gallery[1] ? "aside-img aside-right has-image" : "aside-img aside-right";
     shell.innerHTML = `
-      <div class="detail-hero">${heroEl}</div>
+      <div class="${heroClass}">${heroEl}</div>
       <div class="detail-body">
         <div class="detail-eyebrow">crochet · 0${w.seed}</div>
         <h2 class="detail-title zh-only">${w.nameZh}</h2>
         <div class="detail-title-en">${w.nameEn}</div>
 
         <div class="detail-prose">
-          <div class="aside-img aside-left">${asideLeftEl}</div>
-          <div class="aside-img aside-right">${asideRightEl}</div>
+          <div class="${asideLeftClass}">${asideLeftEl}</div>
+          <div class="${asideRightClass}">${asideRightEl}</div>
           ${asideBottomEl}
 
           <div class="zh-only">${proseZh}</div>
