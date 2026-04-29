@@ -436,6 +436,115 @@
   [data-lang="en"] .log-head .label { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
   [data-lang="en"] .brand .zh { display: none; }
 
+  /* ───────────── photo essay (full-width, prose interleaved with photos) ───────────── */
+  .entry.essay {
+    display: block;
+    max-width: 760px;
+    margin: 0 auto;
+  }
+  .entry.essay .entry-text {
+    display: block;
+    width: 100%;
+    gap: 0;
+  }
+  .entry.essay .entry-title {
+    margin-bottom: 6px;
+  }
+  .entry-essay-body {
+    font-family: var(--hand-jl);
+    font-size: 16.5px;
+    color: var(--ink-soft);
+    line-height: 2;
+    letter-spacing: 0.03em;
+    margin-top: 18px;
+  }
+  .entry-essay-body p {
+    margin: 0 0 1.1em 0;
+  }
+  .entry-essay-body p:last-child { margin-bottom: 0; }
+  [data-lang="en"] .entry-essay-body {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.85;
+  }
+  .entry-photos {
+    margin: 28px 0 32px;
+    display: grid;
+    gap: 10px;
+  }
+  .entry-photos.cols-1 { grid-template-columns: 1fr; }
+  .entry-photos.cols-2 { grid-template-columns: 1fr 1fr; }
+  .entry-photos.cols-3 { grid-template-columns: 1fr 1fr 1fr; }
+  .entry-photos figure {
+    margin: 0;
+    overflow: hidden;
+    background: var(--paper-warm);
+    box-shadow: 0 12px 22px -16px rgba(60,60,30,0.25);
+  }
+  /* multi-photo grids use a uniform 4:3 box (the source photos are all 4:3 so this never crops) */
+  .entry-photos.cols-2 figure, .entry-photos.cols-3 figure { aspect-ratio: 4 / 3; }
+  .entry-photos figure img {
+    width: 100%;
+    height: 100%;
+    display: block;
+    object-fit: cover;
+  }
+  /* a single-photo block is shown at its natural ratio so nothing is cropped — and capped narrower so it doesn't dominate the column */
+  .entry-photos.cols-1 { justify-content: center; }
+  .entry-photos.cols-1 figure {
+    aspect-ratio: auto;
+    max-width: 460px;
+    margin: 0 auto;
+  }
+  .entry-photos.cols-1 figure img { height: auto; }
+  /* multi-photo rows reset any float left over from inline photos above */
+  .entry-photos.cols-2, .entry-photos.cols-3 { clear: both; }
+
+  /* a small photo floated INTO the prose, with text wrapping around it */
+  .entry-photo-inline {
+    float: right;
+    width: clamp(130px, 22%, 180px);
+    margin: 6px 0 14px 22px;
+    overflow: hidden;
+    background: var(--paper-warm);
+    box-shadow: 0 12px 22px -16px rgba(60,60,30,0.25);
+    shape-outside: margin-box;
+  }
+  .entry-photo-inline.float-left {
+    float: left;
+    margin: 6px 22px 14px 0;
+  }
+  .entry-photo-inline img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+  /* a stack of inline photos, vertically arranged, floated right (or left) as one block */
+  .entry-photo-stack {
+    float: right;
+    width: clamp(130px, 22%, 180px);
+    margin: 6px 0 14px 22px;
+    display: flex;
+    flex-direction: column;
+    gap: 10px;
+  }
+  .entry-photo-stack.float-left {
+    float: left;
+    margin: 6px 22px 14px 0;
+  }
+  .entry-photo-stack figure {
+    margin: 0;
+    overflow: hidden;
+    background: var(--paper-warm);
+    box-shadow: 0 12px 22px -16px rgba(60,60,30,0.25);
+  }
+  .entry-photo-stack figure img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
   /* ───────────── responsive ───────────── */
   @media (max-width: 760px) {
     .entry, .entry.flip {
@@ -447,6 +556,14 @@
     .hero { grid-template-columns: 1fr; padding-top: 0; gap: 36px; }
     .hero-art { aspect-ratio: 4 / 4; max-height: 52vh; }
     .nav-links a:not(.lang-wrap) { display: none; }
+    .entry-photos.cols-3, .entry-photos.cols-2 { grid-template-columns: 1fr; }
+    .entry-photo-inline, .entry-photo-inline.float-left,
+    .entry-photo-stack, .entry-photo-stack.float-left {
+      float: none;
+      width: 70%;
+      max-width: 280px;
+      margin: 16px auto;
+    }
   }
 </style>
 </head>
@@ -762,6 +879,39 @@
   ───────────────────────────────────────── */
   const entries = [
     {
+      date: "2026.04.27",
+      essay: true,
+      titleZh: "定式的一天，安心",
+      titleEn: "A scripted day. At ease.",
+      bodyZh: [
+        "4.27日，周一。做完了一场酣畅淋漓的1h的1v1组会，即将迎来一周的赶论文期。果不其然，又是干劲儿和焦虑并存了。",
+        "干劲儿总是来自于我对&ldquo;完成&rdquo;的渴望和对自己&ldquo;作品&rdquo;的欣赏；焦虑总是来自于自己对&ldquo;完美&rdquo;的追求以及对自己&ldquo;不够好&rdquo;的恐惧。",
+        "学会孤独，学会无聊，学会与焦虑和恐惧共处，学会把握自己的节奏。",
+        {stack: ["images/0427-snack.jpg", "images/0427-porch.jpg"], side: "right"},
+        "每个周一都有模版化的日程：结束组会后去 lounge 吃点东西补充下能量；一会儿放空、一会儿琢磨着制定一周的节奏。",
+        "搬着电脑去带 Lab，看着空荡的教室、和 LA 们相视一笑、皮肤冷冷的、互道&ldquo;see you&rdquo;；坐到廊前让太阳晒在手臂上，打开一本电子书，让文字和花在平板上反光的影子重叠。",
+        "然后去和朋友们见面。不同专业的博士们总是在周一完成一些小节点，或许结束组会，或许完成 meeting；大家天马行空地聊天，谈笑间品鉴完一家饭店。",
+        ["images/0427-soup.jpg", "images/0427-shrimp.jpg", "images/0427-dish.jpg"],
+        "我不喜欢&ldquo;定式&rdquo;，但一周的某一天有这样规整的节奏是惬意的、充能的。",
+        "我听着窗外的蝉鸣，回忆着昨天的步调，写下这些字，我感受到风和呼吸的节奏。"
+      ],
+      bodyEn: [
+        "April 27, Monday. Just wrapped a fierce, satisfying hour with my advisor. The week&rsquo;s paper crunch is about to begin. Sure enough — drive and anxiety, side by side again.",
+        "The drive comes from my hunger for &ldquo;finished,&rdquo; and from a quiet fondness for what I&rsquo;ve made. The anxiety comes from my chase after &ldquo;perfect,&rdquo; and from the fear of being &ldquo;not enough.&rdquo;",
+        "Learn solitude. Learn boredom. Learn to live alongside the anxiety and the fear. Learn to keep your own tempo.",
+        {stack: ["images/0427-snack.jpg", "images/0427-porch.jpg"], side: "right"},
+        "Every Monday has the same template. After the lab meeting I drift to the lounge to refuel; I space out for a while, then start sketching the week&rsquo;s rhythm.",
+        "Then I take my laptop to my Lab session — empty classroom, a half-smile traded with the LAs, the air a little cool on my skin, a quiet &ldquo;see you.&rdquo; After that I sit out on the porch and let the sun rest on my arms, open an e-book, watch the words and the reflections of flowers overlap on the tablet.",
+        "Then dinner with friends. PhDs from across departments always seem to close some small Monday milestone — a finished meeting, a wrapped-up advisor session — and we drift into wide-open conversation, judging a whole restaurant in passing.",
+        ["images/0427-soup.jpg", "images/0427-shrimp.jpg", "images/0427-dish.jpg"],
+        "I don&rsquo;t love &ldquo;fixed forms,&rdquo; but having one regulated rhythm in the week — that, I find, is comfortable. Replenishing.",
+        "I listen to the cicadas through the window, retrace yesterday&rsquo;s pace, write these lines. I can feel the rhythm of the breeze, and of my own breath."
+      ],
+      placeZh: "周一",
+      placeEn: "Monday",
+      noLinks: true,
+    },
+    {
       date: "2026.04.25",
       video: "videos/0425.mp4",
       poster: "videos/0425-poster.jpg",
@@ -885,8 +1035,51 @@
      Render feed — alternating layout
   ───────────────────────────────────────── */
   const feedEl = document.getElementById("feed");
+
+  // ─── helper: render an essay body (mixed strings + photo arrays) ───
+  function renderEssayBody(items) {
+    return items.map(item => {
+      if (Array.isArray(item)) {
+        const cols = Math.min(item.length, 3);
+        const figs = item.map(src => `<figure><img src="${src}" alt="" loading="lazy" /></figure>`).join("");
+        return `<div class="entry-photos cols-${cols}">${figs}</div>`;
+      }
+      if (item && typeof item === "object" && item.src) {
+        const sideClass = item.inline === "left" ? "float-left" : "float-right";
+        return `<figure class="entry-photo-inline ${sideClass}"><img src="${item.src}" alt="" loading="lazy" /></figure>`;
+      }
+      if (item && typeof item === "object" && Array.isArray(item.stack)) {
+        const sideClass = item.side === "left" ? "float-left" : "float-right";
+        const figs = item.stack.map(src => `<figure><img src="${src}" alt="" loading="lazy" /></figure>`).join("");
+        return `<div class="entry-photo-stack ${sideClass}">${figs}</div>`;
+      }
+      return `<p>${item}</p>`;
+    }).join("");
+  }
+
   entries.forEach((e, i) => {
     const node = document.createElement("article");
+
+    // Essay-style entries get a different container — single column, full-width prose
+    if (e.essay) {
+      node.className = "entry essay reveal";
+      if (i % 3 === 1) node.classList.add("delay-1");
+      if (i % 3 === 2) node.classList.add("delay-2");
+      node.innerHTML = `
+        <div class="entry-text">
+          <span class="entry-date">${e.date}</span>
+          <h3 class="entry-title"><span class="zh-only">${e.titleZh}</span><span class="en-only">${e.titleEn}</span></h3>
+          <div class="entry-essay-body">
+            <div class="zh-only">${renderEssayBody(e.bodyZh)}</div>
+            <div class="en-only">${renderEssayBody(e.bodyEn)}</div>
+          </div>
+          <span class="entry-place"><span class="zh-only">${e.placeZh}</span><span class="en-only">${e.placeEn}</span></span>
+        </div>
+      `;
+      feedEl.appendChild(node);
+      return;
+    }
+
     node.className = "entry reveal" + (i % 2 ? " flip" : "");
     if (i % 3 === 1) node.classList.add("delay-1");
     if (i % 3 === 2) node.classList.add("delay-2");
