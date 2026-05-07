@@ -1,0 +1,35 @@
+# macOS
+.DS_Store
+._*
+.AppleDouble
+.LSOverride
+
+# editors
+.vscode/
+.idea/
+*.swp
+*.swo
+
+# logs
+*.log
+
+# node (just in case we add tooling later)
+node_modules/
+.npm
+
+# Original-size source photos (kept locally; resized versions are committed)
+images/_originals/
+
+# Original-size source video (kept locally; compressed mp4 is in videos/)
+0425.mov
+_xingshu_chars.txt
+_jinglei_chars.txt
+images/_temp_*
+images/temp_rotated*
+fonts/xingshu.woff2
+
+# Source TTF fonts — only needed locally to subset; large
+*.TTF
+
+# Sandbox cruft
+_testwrite

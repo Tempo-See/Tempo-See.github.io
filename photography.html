@@ -285,6 +285,28 @@
   [data-lang="en"] .gallery-head .label { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
   [data-lang="en"] .brand .zh { display: none; }
 
+  /* ───────────── empty state ───────────── */
+  .empty-state {
+    column-span: all;
+    text-align: center;
+    padding: 18vh 0 24vh;
+    color: var(--ink-faint);
+  }
+  .empty-state .empty-mark {
+    font-family: var(--serif-en);
+    font-size: 28px;
+    letter-spacing: 0.5em;
+    opacity: 0.55;
+    margin-bottom: 16px;
+  }
+  .empty-state p {
+    font-family: var(--serif-zh);
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    margin: 0;
+  }
+  [data-lang="en"] .empty-state p { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
+
   /* ───────────── responsive ───────────── */
   @media (max-width: 1080px) {
     .gallery { column-count: 2; }
@@ -539,43 +561,37 @@
      aspect ratios, palettes. Some have brief
      captions, some don't.
   ───────────────────────────────────────── */
-  const photos = [
-    { date:"2024.03", comp:"windowLight",  aspect: 4/5,  pal:0, seed: 1, capZh:"清晨第一道光",            capEn:"first light" },
-    { date:"2024.04", comp:"horizon",      aspect: 3/2,  pal:1, seed: 2 },
-    { date:"2024.05", comp:"objectCenter", aspect: 1/1,  pal:2, seed: 3, capZh:"桌上的那只杯",            capEn:"the cup on the table" },
-    { date:"2024.06", comp:"geometry",     aspect: 4/5,  pal:3, seed: 4 },
-    { date:"2024.07", comp:"texture",      aspect: 3/4,  pal:4, seed: 5, capZh:"墙也会老",                 capEn:"walls grow old too" },
-    { date:"2024.08", comp:"silhouette",   aspect: 4/5,  pal:5, seed: 6 },
-    { date:"2024.09", comp:"horizon",      aspect: 5/7,  pal:0, seed: 7, capZh:"等船的人",                 capEn:"someone waiting for the boat" },
-    { date:"2024.10", comp:"windowLight",  aspect: 3/2,  pal:2, seed: 8 },
-    { date:"2024.11", comp:"texture",      aspect: 1/1,  pal:1, seed: 9 },
-    { date:"2024.12", comp:"objectCenter", aspect: 4/5,  pal:3, seed:10, capZh:"冬天的下午三点",           capEn:"three p.m. in winter" },
-    { date:"2025.01", comp:"silhouette",   aspect: 3/4,  pal:4, seed:11 },
-    { date:"2025.02", comp:"geometry",     aspect: 5/4,  pal:5, seed:12, capZh:"门里和门外",               capEn:"inside, and outside" },
-    { date:"2025.03", comp:"horizon",      aspect: 4/5,  pal:0, seed:13 },
-    { date:"2025.04", comp:"windowLight",  aspect: 1/1,  pal:1, seed:14, capZh:"那天我没说话",             capEn:"I didn't speak that day" },
-  ];
+  const photos = [];
 
   /* ─────────────────────────────────────────
-     Render gallery
+     Render gallery (or empty state)
   ───────────────────────────────────────── */
   const galleryEl = document.getElementById("gallery");
-  photos.forEach((p, i) => {
-    const node = document.createElement("figure");
-    node.className = "photo reveal" + (p.capZh ? "" : " no-cap");
-    if (i % 3 === 1) node.classList.add("delay-1");
-    if (i % 3 === 2) node.classList.add("delay-2");
-    node.innerHTML = `
-      <div class="photo-frame">
-        ${placeholderSVG({ comp: p.comp, aspect: p.aspect, paletteIdx: p.pal, seed: p.seed })}
+  if (photos.length === 0) {
+    galleryEl.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-mark">·</div>
+        <p><span class="zh-only">尚未上传</span><span class="en-only">Nothing here yet</span></p>
       </div>
-      <figcaption class="photo-meta">
-        <span class="photo-date">${p.date}</span>
-        ${p.capZh ? `<span class="photo-cap"><span class="zh-only">${p.capZh}</span><span class="en-only">${p.capEn || ""}</span></span>` : ""}
-      </figcaption>
     `;
-    galleryEl.appendChild(node);
-  });
+  } else {
+    photos.forEach((p, i) => {
+      const node = document.createElement("figure");
+      node.className = "photo reveal" + (p.capZh ? "" : " no-cap");
+      if (i % 3 === 1) node.classList.add("delay-1");
+      if (i % 3 === 2) node.classList.add("delay-2");
+      node.innerHTML = `
+        <div class="photo-frame">
+          ${placeholderSVG({ comp: p.comp, aspect: p.aspect, paletteIdx: p.pal, seed: p.seed })}
+        </div>
+        <figcaption class="photo-meta">
+          <span class="photo-date">${p.date}</span>
+          ${p.capZh ? `<span class="photo-cap"><span class="zh-only">${p.capZh}</span><span class="en-only">${p.capEn || ""}</span></span>` : ""}
+        </figcaption>
+      `;
+      galleryEl.appendChild(node);
+    });
+  }
 
   /* ───── nav scroll behavior ───── */
   const nav = document.getElementById('nav');

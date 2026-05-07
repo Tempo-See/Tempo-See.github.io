@@ -439,6 +439,28 @@
   [data-lang="en"] .gallery-head .label { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
   [data-lang="en"] .brand .zh { display: none; }
 
+  /* ───────────── empty state ───────────── */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 14vh 0 18vh;
+    color: var(--ink-faint);
+  }
+  .empty-state .empty-mark {
+    font-family: var(--serif-en);
+    font-size: 28px;
+    letter-spacing: 0.5em;
+    opacity: 0.55;
+    margin-bottom: 16px;
+  }
+  .empty-state p {
+    font-family: var(--serif-zh);
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    margin: 0;
+  }
+  [data-lang="en"] .empty-state p { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
+
   /* ───────────── responsive ───────────── */
   @media (max-width: 880px) {
     .hero { grid-template-columns: 1fr; padding-top: 0; gap: 36px; }
@@ -637,94 +659,6 @@
         "At first I gripped the yarn too tight—<br/>pulled so taut the hook couldn&rsquo;t pass through.<br/>Loosen up a little, and the loop would slip off the needle.<br/>&ldquo;How does anyone find that easy give-and-take in the hands?<br/>How many years of practice does that take?&rdquo;",
         "But by the second one,<br/>I had found that touch.<br/>So the world really is held together with sticky tape—<br/>a few hours, and you can pick up a simple skill.",
         "So I thought:<br/>maybe before long, I&rsquo;ll be ready<br/>to design something of my own."
-      ]
-    },
-    { id:"cloud",    nameZh:"云朵围巾",   nameEn:"Cloud Scarf",
-      dateZh:"2024 · 冬", dateEn:"Winter 2024",
-      destZh:"自留", destEn:"kept",
-      seed: 1,
-      proseZh:[
-        "去年最冷的那两个月，每天晚上钩两行。",
-        "不为什么，<br/>就是手要做点事，心才能停下来。",
-        "线很轻，灰白带一点雾蓝。<br/>钩到一半的时候，<br/>窗外正好下了第一场雪。",
-        "<span class=\"pull\">围着它，像把一段安静的日子<br/>挂在脖子上。</span>"
-      ],
-      proseEn:[
-        "Through the coldest two months last year, two rows every night.",
-        "Not for any reason—<br/>my hands needed something to do,<br/>so my mind could rest.",
-        "The yarn is light, off-white with a hint of fog blue.<br/>When I was halfway through,<br/>the first snow fell outside.",
-        "<span class=\"pull\">Wrapping it on feels like wearing<br/>a quiet stretch of days.</span>"
-      ]
-    },
-    { id:"truffle",  nameZh:"松露小包",   nameEn:"Truffle Bag",
-      dateZh:"2024 · 秋", dateEn:"Autumn 2024",
-      destZh:"送给 J", destEn:"gift to J",
-      seed: 2,
-      proseZh:[
-        "J 说她想要一个能装下一本小书、一支口红、一把钥匙的小包。",
-        "我用了焦糖色的羊毛线，<br/>钩成松露的形状——圆圆的，凹凸不平。",
-        "<span class=\"pull\">手作的礼物总比买来的更慢，<br/>慢得让人愿意等。</span>"
-      ],
-      proseEn:[
-        "J said she wanted a bag that could hold a small book, a lipstick, and a key.",
-        "I used a caramel wool,<br/>shaped it like a truffle—round and bumpy.",
-        "<span class=\"pull\">Handmade gifts are always slower than bought ones,<br/>slow enough that someone is willing to wait.</span>"
-      ]
-    },
-    { id:"tea",      nameZh:"茶席杯垫",   nameEn:"Tea Coasters",
-      dateZh:"2025 · 春", dateEn:"Spring 2025",
-      destZh:"卖出 · ¥180", destEn:"sold · ¥180",
-      seed: 3,
-      proseZh:[
-        "一组六片，每片不到掌心大。",
-        "钩的时候在听一段宋代的雅集纪录，<br/>线下针脚也跟着慢下来。",
-        "<span class=\"pull\">茶到了，垫好；<br/>茶走了，杯垫还在那儿。</span>"
-      ],
-      proseEn:[
-        "A set of six, each smaller than a palm.",
-        "I crocheted them while listening to a recording about a Song-dynasty tea gathering,<br/>and my stitches slowed in time.",
-        "<span class=\"pull\">When the tea arrives, the coaster is set;<br/>when the tea goes, the coaster stays.</span>"
-      ]
-    },
-    { id:"cherry",   nameZh:"樱桃发圈",   nameEn:"Cherry Hair Tie",
-      dateZh:"2025 · 春", dateEn:"Spring 2025",
-      destZh:"装饰", destEn:"decoration",
-      seed: 4,
-      proseZh:[
-        "一对小小的樱桃，挂在一根细圈上。",
-        "做完那天，<br/>正好碰上楼下的早樱开了一半。"
-      ],
-      proseEn:[
-        "A pair of tiny cherries, hung on a thin loop.",
-        "The day I finished,<br/>the early cherry blossoms downstairs<br/>were just half-open."
-      ]
-    },
-    { id:"corduroy", nameZh:"灯芯绒挂毯", nameEn:"Corduroy Wall Hanging",
-      dateZh:"2025 · 夏", dateEn:"Summer 2025",
-      destZh:"自留", destEn:"kept",
-      seed: 5,
-      proseZh:[
-        "做这件的时候没看图样。<br/>一边钩一边看它要长成什么。",
-        "<span class=\"pull\">挂在床头那面墙上，<br/>有种被自己安顿好的感觉。</span>"
-      ],
-      proseEn:[
-        "I didn't follow a pattern this time.<br/>I crocheted and watched it become what it wanted to be.",
-        "<span class=\"pull\">Hung on the wall above the bed—<br/>a feeling of being settled by my own hands.</span>"
-      ]
-    },
-    { id:"snow",     nameZh:"初雪披肩",   nameEn:"First Snow Shawl",
-      dateZh:"2024 · 冬", dateEn:"Winter 2024",
-      destZh:"送给妈妈", destEn:"gift to mom",
-      seed: 6,
-      proseZh:[
-        "最纯的羊驼线，奶白色。",
-        "妈妈不太收手作礼物——<br/>她说我做的东西看着费眼睛。<br/>但这件她真的披在了肩上。",
-        "<span class=\"pull\">大概所有的妈妈，<br/>都会偷偷喜欢女儿做的东西。</span>"
-      ],
-      proseEn:[
-        "Pure alpaca yarn, the color of cream.",
-        "Mom rarely accepts handmade gifts—<br/>she says they look hard on my eyes.<br/>But this one, she actually wore.",
-        "<span class=\"pull\">All mothers, I think,<br/>secretly love what their daughters make.</span>"
       ]
     },
   ];

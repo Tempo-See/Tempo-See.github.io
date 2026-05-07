@@ -423,6 +423,27 @@
   [data-lang="en"] .pages-head .label { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
   [data-lang="en"] .brand .zh { display: none; }
 
+  /* ───────────── empty state ───────────── */
+  .empty-state {
+    text-align: center;
+    padding: 14vh 0 18vh;
+    color: var(--ink-faint);
+  }
+  .empty-state .empty-mark {
+    font-family: var(--serif-en);
+    font-size: 28px;
+    letter-spacing: 0.5em;
+    opacity: 0.55;
+    margin-bottom: 16px;
+  }
+  .empty-state p {
+    font-family: var(--serif-zh);
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    margin: 0;
+  }
+  [data-lang="en"] .empty-state p { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
+
   /* ───────────── responsive ───────────── */
   @media (max-width: 760px) {
     .page.m-achieve {
@@ -504,210 +525,10 @@
 <!-- ──────────── pages ──────────── -->
 <section>
   <div class="pages">
-
-    <!-- 1. musing -->
-    <article class="page m-musing reveal">
-      <span class="page-date">2025.04.21</span>
-      <span class="page-mark">i</span>
-      <div class="body">
-        <div class="zh-only">
-          <p>今天什么也没做。<br/>下午看着窗外，<br/>云很慢地走过去。</p>
-          <p>忽然觉得自己也走得很慢，<br/>但那不是一件坏事。</p>
-        </div>
-        <div class="en-only">
-          <p>Did nothing today.<br/>Watched the clouds drift past<br/>through the afternoon window.</p>
-          <p>Realised I move slowly too —<br/>and that isn't a bad thing.</p>
-        </div>
-      </div>
-      <div class="signoff zh-only">—— 慢一点没关系。</div>
-      <div class="signoff en-only">—— it's okay to be slow.</div>
-    </article>
-
-    <div class="ornament reveal"><span class="rule"></span><span class="dot"></span><span class="rule"></span></div>
-
-    <!-- 2. achievement -->
-    <article class="page m-achieve reveal">
-      <span class="page-date">2025.04.05</span>
-      <span class="page-mark">ii · 记</span>
-      <div class="ach-img">
-        <svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <defs>
-            <linearGradient id="ach-2" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"  stop-color="#EFE9DA"/>
-              <stop offset="100%" stop-color="#A89377"/>
-            </linearGradient>
-          </defs>
-          <rect width="200" height="250" fill="url(#ach-2)"/>
-          <!-- a simple letter / envelope -->
-          <g filter="url(#bleed-soft)">
-            <rect x="40" y="100" width="120" height="80" fill="#F8EFD7"/>
-            <polygon points="40,100 100,150 160,100" fill="none" stroke="#5A4B3E" stroke-width="0.8" opacity="0.75"/>
-            <polygon points="40,180 100,140 160,180" fill="none" stroke="#5A4B3E" stroke-width="0.5" opacity="0.4"/>
-          </g>
-          <!-- a small wax seal -->
-          <g opacity="0.85">
-            <circle cx="100" cy="160" r="9" fill="#8E3023"/>
-          </g>
-          <rect width="200" height="250" filter="url(#noise-fine)" opacity="0.55"/>
-        </svg>
-      </div>
-      <div class="ach-text">
-        <span class="ach-stamp"><span class="zh-only">小记 · 收到</span><span class="en-only">Note · Received</span></span>
-        <h3 class="ach-title">
-          <span class="zh-only">第一封读者来信</span>
-          <span class="en-only">First letter from a reader</span>
-        </h3>
-        <p class="ach-note">
-          <span class="zh-only">写网站之前没想过会有人因此寄信来。<br/>邮戳是另一个城市。</span>
-          <span class="en-only">Didn't expect anyone to write because of the site.<br/>The postmark is from another city.</span>
-        </p>
-        <p class="ach-aside zh-only">—— 谢谢你看见。</p>
-        <p class="ach-aside en-only">—— thank you for seeing.</p>
-      </div>
-    </article>
-
-    <div class="ornament reveal"><span class="rule"></span><span class="dot"></span><span class="rule"></span></div>
-
-    <!-- 3. musing — short -->
-    <article class="page m-musing reveal">
-      <span class="page-date">2025.03.18</span>
-      <span class="page-mark">iii</span>
-      <div class="body">
-        <div class="zh-only">
-          <p>春天来了 ——<br/>我反而不想去远的地方。</p>
-        </div>
-        <div class="en-only">
-          <p>Spring arrived —<br/>and I find I want to go nowhere far.</p>
-        </div>
-      </div>
-    </article>
-
-    <div class="ornament reveal"><span class="rule"></span><span class="dot"></span><span class="rule"></span></div>
-
-    <!-- 4. achievement -->
-    <article class="page m-achieve reveal">
-      <span class="page-date">2025.02.27</span>
-      <span class="page-mark">iv · 记</span>
-      <div class="ach-img">
-        <svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <defs>
-            <linearGradient id="ach-4" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"  stop-color="#EFE9DA"/>
-              <stop offset="100%" stop-color="#9B8A77"/>
-            </linearGradient>
-          </defs>
-          <rect width="200" height="250" fill="url(#ach-4)"/>
-          <!-- a thin stack of paper / a thesis -->
-          <g filter="url(#bleed-soft)">
-            <rect x="50" y="80" width="100" height="130" fill="#F8EFD7"/>
-            <rect x="55" y="78" width="100" height="130" fill="#EFE3C8" opacity="0.85"/>
-            <rect x="60" y="76" width="100" height="130" fill="#FBF3DE"/>
-          </g>
-          <!-- title bar -->
-          <rect x="70" y="100" width="80" height="3" fill="#5A4B3E" opacity="0.7"/>
-          <rect x="70" y="115" width="60" height="2" fill="#5A4B3E" opacity="0.55"/>
-          <rect x="70" y="123" width="60" height="2" fill="#5A4B3E" opacity="0.55"/>
-          <!-- a small red mark — accepted -->
-          <circle cx="135" cy="180" r="10" fill="#8E3023" opacity="0.85"/>
-          <rect width="200" height="250" filter="url(#noise-fine)" opacity="0.55"/>
-        </svg>
-      </div>
-      <div class="ach-text">
-        <span class="ach-stamp"><span class="zh-only">小记 · 录用</span><span class="en-only">Note · Accepted</span></span>
-        <h3 class="ach-title">
-          <span class="zh-only">论文录用通知</span>
-          <span class="en-only">Paper accepted</span>
-        </h3>
-        <p class="ach-note">
-          <span class="zh-only">改了八版的那篇，<br/>终于过了。</span>
-          <span class="en-only">Eight revisions later —<br/>it finally went through.</span>
-        </p>
-        <p class="ach-aside zh-only">—— 长舒一口气。</p>
-        <p class="ach-aside en-only">—— a long, slow exhale.</p>
-      </div>
-    </article>
-
-    <div class="ornament reveal"><span class="rule"></span><span class="dot"></span><span class="rule"></span></div>
-
-    <!-- 5. musing — long -->
-    <article class="page m-musing reveal">
-      <span class="page-date">2025.02.04</span>
-      <span class="page-mark">v</span>
-      <div class="body">
-        <div class="zh-only">
-          <p>很多事的「意义」其实都是后来才有的，<br/>当下只是在做。<br/>当下只是「正在做」本身。</p>
-          <p>所以也不必太急，<br/>也不必每一步都问问自己是不是值得。</p>
-          <p>只是先做，<br/>然后日子会替我们解释。</p>
-        </div>
-        <div class="en-only">
-          <p>The "meaning" of things often arrives later.<br/>In the moment, you're just doing.<br/>The moment is just "doing" itself.</p>
-          <p>So no need to rush —<br/>no need to ask at every step whether it's worth it.</p>
-          <p>Just do it first.<br/>The days will explain it for us, after.</p>
-        </div>
-      </div>
-      <div class="signoff zh-only">—— 写于一个失眠的夜。</div>
-      <div class="signoff en-only">—— written on a sleepless night.</div>
-    </article>
-
-    <div class="ornament reveal"><span class="rule"></span><span class="dot"></span><span class="rule"></span></div>
-
-    <!-- 6. achievement — small -->
-    <article class="page m-achieve reveal">
-      <span class="page-date">2025.01.12</span>
-      <span class="page-mark">vi · 记</span>
-      <div class="ach-img">
-        <svg viewBox="0 0 200 250" preserveAspectRatio="xMidYMid slice" aria-hidden="true">
-          <defs>
-            <linearGradient id="ach-6" x1="0" y1="0" x2="0" y2="1">
-              <stop offset="0%"  stop-color="#EFE9DA"/>
-              <stop offset="100%" stop-color="#A89377"/>
-            </linearGradient>
-          </defs>
-          <rect width="200" height="250" fill="url(#ach-6)"/>
-          <!-- a small medal-like circle -->
-          <g filter="url(#bleed-soft)">
-            <circle cx="100" cy="120" r="44" fill="#D9B776"/>
-            <circle cx="100" cy="120" r="32" fill="#B58E4B" opacity="0.6"/>
-            <text x="100" y="128" text-anchor="middle" font-family="Cormorant Garamond" font-style="italic" font-size="22" fill="#5A4B3E" opacity="0.85">v</text>
-          </g>
-          <!-- ribbon -->
-          <g fill="#8E3023" opacity="0.8">
-            <polygon points="80,160 120,160 110,210 100,196 90,210"/>
-          </g>
-          <rect width="200" height="250" filter="url(#noise-fine)" opacity="0.55"/>
-        </svg>
-      </div>
-      <div class="ach-text">
-        <span class="ach-stamp"><span class="zh-only">小记 · 半马完赛</span><span class="en-only">Note · Half Marathon</span></span>
-        <h3 class="ach-title">
-          <span class="zh-only">第一次跑完半马</span>
-          <span class="en-only">My first half marathon</span>
-        </h3>
-        <p class="ach-note">
-          <span class="zh-only">最后两公里是靠着脑子里那首歌跑完的。<br/>晚饭吃了两碗面。</span>
-          <span class="en-only">The last two kilometers ran on a song stuck in my head.<br/>Ate two bowls of noodles for dinner.</span>
-        </p>
-        <p class="ach-aside zh-only">—— 身体也会记得。</p>
-        <p class="ach-aside en-only">—— the body remembers too.</p>
-      </div>
-    </article>
-
-    <div class="ornament reveal"><span class="rule"></span><span class="dot"></span><span class="rule"></span></div>
-
-    <!-- 7. musing — very short -->
-    <article class="page m-musing reveal">
-      <span class="page-date">2024.12.31</span>
-      <span class="page-mark">vii</span>
-      <div class="body">
-        <div class="zh-only">
-          <p>新年没有什么愿望。<br/>能继续做现在做的，<br/>就是好的。</p>
-        </div>
-        <div class="en-only">
-          <p>No wishes for the new year.<br/>To keep doing what I'm doing —<br/>that would be enough.</p>
-        </div>
-      </div>
-    </article>
-
+    <div class="empty-state">
+      <div class="empty-mark">·</div>
+      <p><span class="zh-only">尚未上传</span><span class="en-only">Nothing here yet</span></p>
+    </div>
   </div>
 </section>
 

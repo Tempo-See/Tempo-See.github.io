@@ -441,6 +441,27 @@
   [data-lang="en"] .log-head .label { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
   [data-lang="en"] .brand .zh { display: none; }
 
+  /* ───────────── empty state ───────────── */
+  .empty-state {
+    text-align: center;
+    padding: 14vh 0 18vh;
+    color: var(--ink-faint);
+  }
+  .empty-state .empty-mark {
+    font-family: var(--serif-en);
+    font-size: 28px;
+    letter-spacing: 0.5em;
+    opacity: 0.55;
+    margin-bottom: 16px;
+  }
+  .empty-state p {
+    font-family: var(--serif-zh);
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    margin: 0;
+  }
+  [data-lang="en"] .empty-state p { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
+
   /* ───────────── responsive ───────────── */
   @media (max-width: 760px) {
     .entry, .entry.flip {
@@ -762,90 +783,20 @@
   /* ─────────────────────────────────────────
      7 entries — travel vlogs
   ───────────────────────────────────────── */
-  const entries = [
-    {
-      date: "2025.04.06",
-      scene: "seasideEvening",
-      titleZh: "海边的最后一晚",
-      titleEn: "The last evening by the sea",
-      noteZh: "回去再说吧，今晚不想想。",
-      noteEn: "We'll deal with it back home — not tonight.",
-      placeZh: "霞 浦", placeEn: "Xiapu",
-      stampTopZh: "途中", stampTopEn: "EN ROUTE",
-      bili: "#", xhs: "#",
-    },
-    {
-      date: "2025.03.20",
-      scene: "mountainView",
-      titleZh: "山里走了三天",
-      titleEn: "Three days in the mountains",
-      noteZh: "下山的时候腿在抖，但心是稳的。",
-      noteEn: "Legs shook coming down — heart was steady.",
-      placeZh: "终南", placeEn: "Zhongnan",
-      stampTopZh: "途中", stampTopEn: "EN ROUTE",
-      bili: "#", xhs: "#",
-    },
-    {
-      date: "2025.02.14",
-      scene: "trainWindow",
-      titleZh: "高铁五个小时",
-      titleEn: "Five hours on the train",
-      noteZh: "把书读完了，云也看完了。",
-      noteEn: "Finished the book. Finished the clouds.",
-      placeZh: "京沪线", placeEn: "BJS-SHA",
-      stampTopZh: "途中", stampTopEn: "EN ROUTE",
-      bili: "#", xhs: "#",
-    },
-    {
-      date: "2025.01.29",
-      scene: "backstreet",
-      titleZh: "胡同乱走的下午",
-      titleEn: "An afternoon lost in the alleys",
-      noteZh: "迷路那次拍到了最好的几张。",
-      noteEn: "The best frames came when I was lost.",
-      placeZh: "北 京", placeEn: "Beijing",
-      stampTopZh: "途中", stampTopEn: "EN ROUTE",
-      bili: "#", xhs: "#",
-    },
-    {
-      date: "2024.12.10",
-      scene: "nightStreet",
-      titleZh: "雨后的小街",
-      titleEn: "A small street after the rain",
-      noteZh: "灯都倒在地上，没有踩上去。",
-      noteEn: "All the lights pooled in the ground — I stepped around them.",
-      placeZh: "京 都", placeEn: "Kyoto",
-      stampTopZh: "途中", stampTopEn: "EN ROUTE",
-      bili: "#", xhs: "#",
-    },
-    {
-      date: "2024.11.18",
-      scene: "hikePath",
-      titleZh: "周末短徒步",
-      titleEn: "A short weekend hike",
-      noteZh: "山顶其实没什么 —— 上山才有。",
-      noteEn: "There was nothing at the top — the climb was the thing.",
-      placeZh: "莫干山", placeEn: "Moganshan",
-      stampTopZh: "途中", stampTopEn: "EN ROUTE",
-      bili: "#", xhs: "#",
-    },
-    {
-      date: "2024.10.04",
-      scene: "teaCafe",
-      titleZh: "咖啡馆里写两小时",
-      titleEn: "Two hours of writing in a café",
-      noteZh: "邻桌的老人喝完了三杯。",
-      noteEn: "The old man next to me finished three cups.",
-      placeZh: "成 都", placeEn: "Chengdu",
-      stampTopZh: "途中", stampTopEn: "EN ROUTE",
-      bili: "#", xhs: "#",
-    },
-  ];
+  const entries = [];
 
   /* ─────────────────────────────────────────
      Render feed — alternating layout
   ───────────────────────────────────────── */
   const feedEl = document.getElementById("feed");
+  if (entries.length === 0) {
+    feedEl.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-mark">·</div>
+        <p><span class="zh-only">尚未上传</span><span class="en-only">Nothing here yet</span></p>
+      </div>
+    `;
+  } else {
   entries.forEach((e, i) => {
     const node = document.createElement("article");
     node.className = "entry reveal" + (i % 2 ? " flip" : "");
@@ -877,6 +828,7 @@
     `;
     feedEl.appendChild(node);
   });
+  }
 
   /* ───── nav scroll behavior ───── */
   const nav = document.getElementById('nav');

@@ -527,6 +527,28 @@
     font-family: revert;
   }
 
+  /* ───────────── empty state ───────────── */
+  .empty-state {
+    grid-column: 1 / -1;
+    text-align: center;
+    padding: 14vh 0 18vh;
+    color: var(--ink-faint);
+  }
+  .empty-state .empty-mark {
+    font-family: var(--serif-en);
+    font-size: 28px;
+    letter-spacing: 0.5em;
+    opacity: 0.55;
+    margin-bottom: 16px;
+  }
+  .empty-state p {
+    font-family: var(--serif-zh);
+    font-size: 14px;
+    letter-spacing: 0.3em;
+    margin: 0;
+  }
+  [data-lang="en"] .empty-state p { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
+
   /* ───────────── responsive ───────────── */
   @media (max-width: 880px) {
     .hero { grid-template-columns: 1fr; padding-top: 0; gap: 36px; }
@@ -764,52 +786,6 @@
       tone: "rose",
       seedA: 4, seedB: 19
     },
-    {
-      id: "chentan",
-      name: "沉檀",
-      vendor: "老山香堂",
-      vendorChars: ["老","山","香","堂"],
-      ptype: "香粉",
-      ptypeEn: "powder",
-      composition: ["沉香","老山檀"],
-      impressions: ["沉静","厚重"],
-      temp: ["熏香温度 · 110 木质回甘", "130 厚重深远"],
-      recipe: `沉檀相和，木气交融。一为水沉，一为檀心，可助清神。`,
-      recipeSource: "占位",
-      review: [
-        "起香缓慢，几乎要怀疑炉子坏了",
-        "等过了三炷茶的功夫",
-        "才像有人轻轻把门推开",
-        { pull: "木气进来，先是檀，后是沉" },
-        "夜里写字时最适合",
-        "心一沉下来，字就稳了",
-      ],
-      tone: "wood",
-      seedA: 5, seedB: 23
-    },
-    {
-      id: "xuezhong",
-      name: "雪中春信",
-      vendor: "香事斋",
-      vendorChars: ["香","事","斋"],
-      ptype: "香丸",
-      ptypeEn: "ball",
-      composition: ["梅","龙脑","白檀"],
-      impressions: ["清冷","一线"],
-      temp: ["熏香温度 · 120 梅意初显", "140 冷冽不绝"],
-      recipe: `雪中春信，宋人最爱。取梅花含露，以龙脑相佐，作丸窨之。`,
-      recipeSource: "占位",
-      review: [
-        "名字比香味更先一步到达",
-        "起香薄，像窗缝里透进来一点风",
-        "三十分钟之后",
-        { pull: "梅意才慢慢成形" },
-        "不浓，但收不住",
-        "适合一个人的早春",
-      ],
-      tone: "cold",
-      seedA: 6, seedB: 29
-    },
   ];
 
   /* ───── render seal ───── */
@@ -856,6 +832,14 @@
 
   /* ───── render catalog ───── */
   const catalogEl = document.getElementById("catalog");
+  if (items.length === 0) {
+    catalogEl.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-mark">·</div>
+        <p><span class="zh-only">尚未上传</span><span class="en-only">Nothing here yet</span></p>
+      </div>
+    `;
+  }
   items.forEach((it, i) => {
     const card = document.createElement("div");
     card.className = "item reveal";
