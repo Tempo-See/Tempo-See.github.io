@@ -462,11 +462,26 @@
     margin: 0 0 1.1em 0;
   }
   .entry-essay-body p:last-child { margin-bottom: 0; }
+  .entry-essay-body .pull {
+    display: block;
+    font-family: var(--hand);
+    color: var(--accent-deep);
+    font-size: 1.5em;
+    line-height: 1.5;
+    text-align: center;
+    margin: 1.2em 0 0;
+    letter-spacing: 0.06em;
+  }
   [data-lang="en"] .entry-essay-body {
     font-family: var(--serif-en);
     font-style: italic;
     font-size: 15px;
     line-height: 1.85;
+  }
+  [data-lang="en"] .entry-essay-body .pull {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-weight: 300;
   }
   .entry-photos {
     margin: 28px 0 32px;
@@ -481,14 +496,13 @@
     overflow: hidden;
     background: var(--paper-warm);
     box-shadow: 0 12px 22px -16px rgba(60,60,30,0.25);
+    align-self: start;
   }
-  /* multi-photo grids use a uniform 4:3 box (the source photos are all 4:3 so this never crops) */
-  .entry-photos.cols-2 figure, .entry-photos.cols-3 figure { aspect-ratio: 4 / 3; }
+  /* photos render at their natural aspect ratio — no cropping */
   .entry-photos figure img {
     width: 100%;
-    height: 100%;
+    height: auto;
     display: block;
-    object-fit: cover;
   }
   /* a single-photo block is shown at its natural ratio so nothing is cropped — and capped narrower so it doesn't dominate the column */
   .entry-photos.cols-1 { justify-content: center; }
@@ -878,6 +892,54 @@
      8 entries — daily life vlogs
   ───────────────────────────────────────── */
   const entries = [
+    {
+      date: "2026.04.30",
+      essay: true,
+      titleZh: "湿润而鲜艳的一天",
+      titleEn: "A wet, vivid day",
+      bodyZh: [
+        "小雨润如酥，打湿了我浑身的燥气。",
+        ["images/0430-flower-1.jpg", "images/0430-flower-3.jpg"],
+        "花挂着水珠，潮湿的夜色，",
+        "月光在穿过凝结的云层时也被打湿了。",
+        ["images/0430-night.jpg", "images/0430-moonlight.jpg"]
+      ],
+      bodyEn: [
+        "A small rain, soft as cream, washed all the dryness out of me.",
+        ["images/0430-flower-1.jpg", "images/0430-flower-3.jpg"],
+        "Flowers hung with water-beads, the night damp around them,",
+        "and even the moonlight came through the gathered clouds a little wet.",
+        ["images/0430-night.jpg", "images/0430-moonlight.jpg"]
+      ],
+      placeZh: "雨后",
+      placeEn: "after the rain",
+      noLinks: true,
+    },
+    {
+      date: "2026.04.30",
+      essay: true,
+      titleZh: "最后的 free dinner",
+      titleEn: "The last free dinner",
+      bodyZh: [
+        "学期最后一次 free dinner。",
+        "在这里遇见了很多 nice 的人，",
+        "啊，还有一个很棒的香港男孩。",
+        ["images/0430-dinner-1.jpg", "images/0430-dinner-2.jpg", "images/0430-dinner-3.jpg"],
+        "突然想起我们似乎还没有彼此的联系方式。",
+        "<span class=\"pull\">希望下学期你还在。</span>"
+      ],
+      bodyEn: [
+        "The last free dinner of the term.",
+        "Met so many lovely people here —",
+        "and one really wonderful boy from Hong Kong.",
+        ["images/0430-dinner-1.jpg", "images/0430-dinner-2.jpg", "images/0430-dinner-3.jpg"],
+        "It just hit me that we never traded contacts.",
+        "<span class=\"pull\">I hope you&rsquo;re still here next term.</span>"
+      ],
+      placeZh: "学期末",
+      placeEn: "end of term",
+      noLinks: true,
+    },
     {
       date: "2026.04.27",
       essay: true,

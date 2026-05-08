@@ -29,10 +29,20 @@
     --serif-en: "Cormorant Garamond", "Noto Serif SC", serif;
     --hand:     "Liu Jian Mao Cao", "Noto Serif SC", cursive;
     --hand-2:   "Long Cang", "Noto Serif SC", cursive;
+    --hand-jl:  "JingLei", "Noto Serif SC", "STKaiti", serif;
 
     --max:  1280px;
     --gut:  clamp(20px, 4vw, 56px);
     --nav-h: 56px;
+  }
+
+  /* 方正静蕾简体（子集化）— 长篇手写笔记专用 */
+  @font-face {
+    font-family: "JingLei";
+    src: url("fonts/jinglei.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
   }
 
   * { box-sizing: border-box; }
@@ -441,6 +451,76 @@
   [data-lang="en"] .log-head .label { font-family: var(--serif-en); font-style: italic; letter-spacing: 0.18em; }
   [data-lang="en"] .brand .zh { display: none; }
 
+  /* ───────────── essay-style milestone (text-only "postcard back") ───────────── */
+  .entry.essay {
+    display: block;
+    max-width: 720px;
+    margin: 0 auto;
+    position: relative;
+  }
+  .entry.essay::before {
+    /* a faint horizontal hairline above each essay, like a stamp postcard divider */
+    content: "";
+    display: block;
+    width: 56px; height: 1px;
+    background: var(--accent);
+    opacity: 0.55;
+    margin-bottom: 24px;
+  }
+  .entry.essay .entry-text {
+    display: block;
+    width: 100%;
+    gap: 0;
+  }
+  .entry.essay .entry-stamp-row {
+    display: flex; align-items: baseline; justify-content: space-between;
+    margin-bottom: 18px;
+  }
+  .entry.essay .entry-stamp-row .stamp-text {
+    font-family: var(--serif-en);
+    font-size: 11px;
+    letter-spacing: 0.46em;
+    text-transform: uppercase;
+    color: var(--accent-deep);
+    opacity: 0.75;
+  }
+  .entry.essay .entry-title {
+    margin-bottom: 6px;
+  }
+  .entry-essay-body {
+    font-family: var(--hand-jl);
+    font-size: 16.5px;
+    color: var(--ink-soft);
+    line-height: 2;
+    letter-spacing: 0.03em;
+    margin-top: 22px;
+  }
+  .entry-essay-body p {
+    margin: 0 0 1.1em 0;
+  }
+  .entry-essay-body p:last-child { margin-bottom: 0; }
+  .entry-essay-body .pull {
+    display: block;
+    font-family: var(--hand);
+    color: var(--accent-deep);
+    font-size: 1.5em;
+    line-height: 1.5;
+    text-align: center;
+    margin: 1.4em 0;
+    letter-spacing: 0.06em;
+  }
+  [data-lang="en"] .entry-essay-body {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 15px;
+    line-height: 1.85;
+  }
+  [data-lang="en"] .entry-essay-body .pull {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-weight: 300;
+  }
+
   /* ───────────── empty state ───────────── */
   .empty-state {
     text-align: center;
@@ -783,7 +863,28 @@
   /* ─────────────────────────────────────────
      7 entries — travel vlogs
   ───────────────────────────────────────── */
-  const entries = [];
+  const entries = [
+    {
+      date: "2026.05.06",
+      essay: true,
+      titleZh: "第一次投稿",
+      titleEn: "First Submission",
+      bodyZh: [
+        "这是一个小小的里程碑。",
+        "我看到了这个论文周期自己的不足，<br/>曾遗憾过本可以做得更快更好，<br/>但更多的是期待下一个周期自己的进步。",
+        "<span class=\"pull\">但行好事，<br/>莫问前程。</span>",
+        "不论论文结果如何，我爱它。"
+      ],
+      bodyEn: [
+        "A small milestone.",
+        "I saw plenty I could have done better in this paper cycle — moments where I wish I&rsquo;d been faster, sharper. But mostly I&rsquo;m looking forward to the version of me that shows up in the next one.",
+        "<span class=\"pull\">Just do the good thing.<br/>Don&rsquo;t ask the road ahead.</span>",
+        "Whatever the verdict on the paper turns out to be — I love it."
+      ],
+      placeZh: "PhD · 第一程", placeEn: "PhD · the first leg",
+      stampTopZh: "里程", stampTopEn: "MILESTONE",
+    },
+  ];
 
   /* ─────────────────────────────────────────
      Render feed — alternating layout
@@ -799,6 +900,32 @@
   } else {
   entries.forEach((e, i) => {
     const node = document.createElement("article");
+
+    // Essay (text-only milestone) — full-width single column, no art panel
+    if (e.essay) {
+      node.className = "entry essay reveal";
+      if (i % 3 === 1) node.classList.add("delay-1");
+      if (i % 3 === 2) node.classList.add("delay-2");
+      const bodyZh = e.bodyZh.map(p => `<p>${p}</p>`).join("");
+      const bodyEn = e.bodyEn.map(p => `<p>${p}</p>`).join("");
+      node.innerHTML = `
+        <div class="entry-text">
+          <div class="entry-stamp-row">
+            <span class="entry-date">${e.date}</span>
+            <span class="stamp-text"><span class="zh-only">${e.stampTopZh}</span><span class="en-only">${e.stampTopEn}</span></span>
+          </div>
+          <h3 class="entry-title"><span class="zh-only">${e.titleZh}</span><span class="en-only">${e.titleEn}</span></h3>
+          <div class="entry-essay-body">
+            <div class="zh-only">${bodyZh}</div>
+            <div class="en-only">${bodyEn}</div>
+          </div>
+          <span class="entry-place"><span class="zh-only">${e.placeZh}</span><span class="en-only">${e.placeEn}</span></span>
+        </div>
+      `;
+      feedEl.appendChild(node);
+      return;
+    }
+
     node.className = "entry reveal" + (i % 2 ? " flip" : "");
     if (i % 3 === 1) node.classList.add("delay-1");
     if (i % 3 === 2) node.classList.add("delay-2");

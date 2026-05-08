@@ -229,18 +229,36 @@
     width: 100%;
     overflow: hidden;
     background: var(--paper-warm);
-    transition: transform .8s cubic-bezier(.2,.7,.2,1);
   }
-  .photo:hover .photo-frame { transform: scale(1.01); }
-  .photo-frame svg { width: 100%; height: auto; display: block; transition: filter .6s ease; }
-  .photo:hover .photo-frame svg { filter: brightness(1.03); }
+  .photo-frame svg, .photo-frame img { width: 100%; height: auto; display: block; transition: filter .6s ease; }
+  .photo:hover .photo-frame svg, .photo:hover .photo-frame img { filter: brightness(1.03); }
 
   .photo-meta {
-    margin-top: 10px;
+    margin-top: 12px;
     display: flex;
     align-items: baseline;
     justify-content: space-between;
     gap: 12px;
+  }
+  .photo-info {
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    min-width: 0;
+  }
+  .photo-title {
+    font-family: var(--serif-zh);
+    font-weight: 400;
+    font-size: 16px;
+    letter-spacing: 0.24em;
+    color: var(--ink);
+    margin: 0;
+    line-height: 1.3;
+  }
+  [data-lang="en"] .photo-title {
+    font-family: var(--serif-en);
+    font-style: italic;
+    letter-spacing: 0.08em;
   }
   .photo-date {
     font-family: var(--serif-en);
@@ -561,7 +579,15 @@
      aspect ratios, palettes. Some have brief
      captions, some don't.
   ───────────────────────────────────────── */
-  const photos = [];
+  const photos = [
+    { date: "2026.04",
+      image: "images/0430-flower-2.jpg",
+      titleZh: "花", titleEn: "Flower",
+      capZh: "湿润、生命力", capEn: "moist · alive" },
+    { date: "2026.04",
+      image: "images/0430-construction.jpg",
+      titleZh: "施工", titleEn: "Construction" },
+  ];
 
   /* ─────────────────────────────────────────
      Render gallery (or empty state)
@@ -577,16 +603,25 @@
   } else {
     photos.forEach((p, i) => {
       const node = document.createElement("figure");
-      node.className = "photo reveal" + (p.capZh ? "" : " no-cap");
+      node.className = "photo reveal" + (p.capZh ? "" : " no-cap") + (p.titleZh ? "" : " no-title");
       if (i % 3 === 1) node.classList.add("delay-1");
       if (i % 3 === 2) node.classList.add("delay-2");
+      const art = p.image
+        ? `<img src="${p.image}" alt="${p.titleZh || p.capZh || ''}" loading="lazy" />`
+        : placeholderSVG({ comp: p.comp, aspect: p.aspect, paletteIdx: p.pal, seed: p.seed });
+      const titleHTML = p.titleZh
+        ? `<h3 class="photo-title"><span class="zh-only">${p.titleZh}</span><span class="en-only">${p.titleEn || ""}</span></h3>`
+        : "";
+      const capHTML = p.capZh
+        ? `<span class="photo-cap"><span class="zh-only">${p.capZh}</span><span class="en-only">${p.capEn || ""}</span></span>`
+        : "";
       node.innerHTML = `
-        <div class="photo-frame">
-          ${placeholderSVG({ comp: p.comp, aspect: p.aspect, paletteIdx: p.pal, seed: p.seed })}
+        <div class="photo-frame${p.image ? ' has-image' : ''}">
+          ${art}
         </div>
         <figcaption class="photo-meta">
+          <div class="photo-info">${titleHTML}${capHTML}</div>
           <span class="photo-date">${p.date}</span>
-          ${p.capZh ? `<span class="photo-cap"><span class="zh-only">${p.capZh}</span><span class="en-only">${p.capEn || ""}</span></span>` : ""}
         </figcaption>
       `;
       galleryEl.appendChild(node);
