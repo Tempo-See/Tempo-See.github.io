@@ -31,10 +31,20 @@
     --hand:     "Liu Jian Mao Cao", "Noto Serif SC", cursive;
     --hand-2:   "Long Cang", "Noto Serif SC", cursive;
     --brush:    "Ma Shan Zheng", "Noto Serif SC", serif;
+    --hand-jl:  "JingLei", "Noto Serif SC", "STKaiti", serif;
 
     --max:  1280px;
     --gut:  clamp(20px, 4vw, 56px);
     --nav-h: 56px;
+  }
+
+  /* 方正静蕾简体（子集化）— 长篇手写笔记专用 */
+  @font-face {
+    font-family: "JingLei";
+    src: url("fonts/jinglei.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
   }
 
   * { box-sizing: border-box; }
@@ -286,6 +296,73 @@
     text-transform: uppercase;
   }
 
+  /* essay entry — long-form letter, left-aligned, JingLei body */
+  .page.m-essay {
+    padding-top: 44px;
+  }
+  .page.m-essay .essay-title {
+    font-family: var(--serif-zh);
+    font-weight: 400;
+    font-size: clamp(22px, 2.4vw, 30px);
+    letter-spacing: 0.22em;
+    color: var(--ink);
+    margin: 0 0 4px;
+    text-align: center;
+    line-height: 1.4;
+  }
+  .page.m-essay .essay-title-en {
+    text-align: center;
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: clamp(14px, 1.2vw, 16px);
+    letter-spacing: 0.12em;
+    color: var(--ink-faint);
+    margin-bottom: 36px;
+  }
+  [data-lang="en"] .page.m-essay .essay-title { display: none; }
+  [data-lang="en"] .page.m-essay .essay-title-en {
+    font-style: normal;
+    font-weight: 400;
+    font-size: clamp(22px, 2vw, 28px);
+    letter-spacing: 0.06em;
+    color: var(--ink);
+    margin-bottom: 36px;
+  }
+  .page.m-essay .body {
+    font-family: var(--hand-jl);
+    font-weight: 400;
+    font-size: clamp(15.5px, 1.15vw, 17.5px);
+    line-height: 2.05;
+    color: var(--ink-soft);
+    letter-spacing: 0.04em;
+    max-width: 36em;
+    margin: 0 auto;
+    text-align: left;
+  }
+  [data-lang="en"] .page.m-essay .body {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: clamp(16px, 1.25vw, 18px);
+    letter-spacing: 0.01em;
+    line-height: 1.85;
+  }
+  .page.m-essay .body p + p { margin-top: 1.3em; }
+  .page.m-essay .signoff {
+    display: block;
+    text-align: right;
+    font-family: var(--hand);
+    color: var(--accent);
+    font-size: 24px;
+    margin: 32px auto 0;
+    max-width: 36em;
+    letter-spacing: 0.06em;
+  }
+  [data-lang="en"] .page.m-essay .signoff {
+    font-family: var(--serif-en);
+    font-style: italic;
+    font-size: 22px;
+  }
+
   /* musing entry — text-centered prose */
   .page.m-musing {
     text-align: center;
@@ -524,15 +601,71 @@
 
 <!-- ──────────── pages ──────────── -->
 <section>
-  <div class="pages">
-    <div class="empty-state">
-      <div class="empty-mark">·</div>
-      <p><span class="zh-only">尚未上传</span><span class="en-only">Nothing here yet</span></p>
-    </div>
-  </div>
+  <div class="pages" id="pages"></div>
 </section>
 
 <script>
+  /* ───── entries data ───── */
+  const entries = [
+    {
+      type: "essay",
+      date: "2026.05.10",
+      mark: "i",
+      titleZh: "母亲节，给妈妈",
+      titleEn: "Mother's Day, for Mom",
+      bodyZh: [
+        "今天是我和妈妈的第二十八个母亲节。我很想写一点东西，来记录下我感受到的母女特殊的情感联结。大概要从很久很久之前说起，那时候我甚至没有血肉。我只能从她讲起「当年」时眼角绽放的幸福里，从他人文字里对她的苛刻或赞美中，构筑出一个想象。",
+        "她是怀着怎样的爱意孕育着我呢？她读书看到用音乐胎教的理论，于是成天躺在床上抱着一台黑色的录音机，循环播放莫扎特的磁带，手里摇着蒲扇，摇着摇着就睡着了。迷糊间又想着陪同她未出世的孩子一起学习，于是挣扎着支开眼皮，惺忪地接受着高雅艺术的熏陶。她也时常和我的爸爸对着肚皮唤我，他们笑眯眯地说：「你那时肯定能听见爸爸妈妈，你的小手从肚皮上顶出来，和我们击掌，真可爱」。肚皮上出现一只手！我实在觉得骇人，又怀疑他们是不是扭曲了自己的记忆——我和空气之间隔了整整八层肉，手怎么能拍出印记呢！可他们从这场景中没有感受到半分惊悚，笑得如此幸福。看来这只模糊的、存疑的手穿过了漫长的时光，将他们从中年一地鸡毛的辛劳捉回到了年轻时的期待中。",
+        "她想象着我会是一个怎样的小孩，幼稚地向各路神仙许下愿望：别无所求，但求她未来健康和快乐，如果还能多求一点，那就要她多一点点聪明、多一点点漂亮……每每想到这里，她就开始埋怨起自己的贪心，怕神灵听漏了重点，又把「健康」和「快乐」加上重音重复几遍。那时候他们没钱、过得也辛苦，但却不会担忧未来，生活中第一等大事就是期待，期待我的出生，期待从我的眉眼中找到自己和爱人的痕迹，期待我的笑，期待他们的爱在我的身上流动。",
+        "从初中起，我开始接触到一些文艺作品，将母女之间复杂的、纠缠的、彼此怨恨着去爱的关系展现出来。但她不是这样的，她爱我爱得纯粹、笨拙、用力，她没有受过太多的教育，也没有主动去拜读过一些著作，但她天然地知道她所遭受的苦难与我无关。她说我是她人生做过的最珍贵的选择，但她却不会期待我去拯救她。她知道我不是她的，所以学着压下自己的焦虑放我去走自己的路。她会反思自己是不是抱我太紧、是不是太软弱所以没有保护到我。我说，不是的，我怎么能够苛求你是完美的呢？我怎么能苛求你在并不幸福美满的境地里给我一切呢？有着这样的爱的力量，我已经十分幸福和满足，我也因此具有抵抗风雨的信心和不断修复自己的勇气，这根看不见的血脉的线源源不断地向我输送着能量，这是多么奇妙的事呀！",
+        "我很爱她，她也很爱我，但我们之间的爱并不是天上地下、绝无仅有的特殊，而是所有尊重和热爱着彼此的母女间都能感受到的连结。有一段时间，我曾怀着十分感恩的情绪将这份依恋神圣化了，然而再成熟一点之后看，就意识到这种神话和极致化是对彼此的枷锁。它将妈妈束缚在了一个需要为我付出、包容我一切的角色中，她须得不停不停地奉献才能完整我心里虚幻的假象；而我也背上沉重的爱的负累，将自己圈在了需要「回报」的道德洼地里。谁能在这样追求纯粹和完美的情绪中获利呢？我看到她的缺点，也接受她的部分缺点，同时也包容自己不接受她其他缺点的行为。但不管是看到、接受还是无奈，都不会影响到我们的相处和对彼此的支撑。她其实也如此，看得见我也放得下我。意识到这一点的时候，我才真正地从「孩子」这样的身份里长大了。我们是不再渴望改变或者抓紧对方的独立而成熟的个体，我们有能力去回应和支持、或者是拒绝对方的情绪。",
+        "在亲子的关系中，有人学着怎样被爱、有人学着怎样维护爱、有人学着如何走出伤痛、有人学着如何呼吸。而我学的是从家里出走，然后记住那些彼此需要的特殊时刻，说一句："
+      ],
+      bodyEn: [
+        "Today is the twenty-eighth Mother&rsquo;s Day my mom and I have shared. I&rsquo;ve wanted to write something — to record the particular bond I feel between mother and daughter. The story has to start a long time ago, before I had flesh and blood. I can only piece together an image from the happiness that bloomed at the corners of her eyes whenever she spoke of &ldquo;back then,&rdquo; and from how others, in writing, were either harsh on her or praised her.",
+        "How much love must she have carried me with? She read about prenatal music theory, and so for days she lay in bed cradling a black tape recorder, looping a Mozart cassette, fanning herself with a palm-leaf fan, and falling asleep mid-fan. Half-dozing, she would think she should also be studying alongside her unborn child, so she would force her lashes apart and let the high art wash over her. She and my dad often called to me through her belly. They tell it now, smiling: &ldquo;You could hear us back then for sure — your little hand would push out against the skin and high-five us. It was so cute.&rdquo; A hand appearing on the belly! Honestly it sounds eerie, and I half-suspect they&rsquo;ve bent their own memory — between me and the air there were eight layers of flesh; how could a hand leave a mark? But they feel none of the strangeness — only the joy. So that vague, doubtful hand reached across decades and pulled them, from the chicken-feathered exhaustion of middle age, back to the expectations of their youth.",
+        "She imagined what kind of child I might be, and naïvely petitioned every god and spirit: nothing else, only that her child be healthy and happy — and if she could ask one more thing, then maybe a little smart, a little pretty… but each time she got there she scolded herself for being greedy, worried the gods might miss the important parts, and added emphasis on &ldquo;healthy&rdquo; and &ldquo;happy&rdquo; to repeat them. They had no money then, life was hard, but they didn&rsquo;t worry about the future. The first thing on their mind was anticipation — anticipation of my birth, of finding traces of themselves and their beloved in my eyes, of my laugh, of their love flowing through me.",
+        "From middle school on I started reading literature about complicated, tangled mother-daughter relationships — love laced with resentment. But she wasn&rsquo;t like that. She loves me purely, clumsily, hard. She wasn&rsquo;t much educated, never sought out the great books, but she knew, by some instinct, that the suffering she had endured had nothing to do with me. She tells me I am the most precious choice of her life, but she never expects me to save her. She knows I&rsquo;m not hers — and so she learns to hold down her own anxiety and let me walk my own road. She wonders whether she held me too tight, whether she was too weak to protect me. I tell her: no — how could I ever demand that you be perfect? How could I demand that you give me everything from a place that was not happy or whole? With this love behind me, I am already happy and fulfilled. From it I have the courage to weather storms, the courage to keep mending myself. This invisible thread of blood keeps sending me strength — what a wondrous thing.",
+        "I love her deeply, and she loves me deeply, but our love is not some heaven-and-earth, one-of-a-kind exception — it&rsquo;s the bond every mother-daughter pair who respect and love each other can feel. For a while, in a flood of gratitude, I sanctified it. But growing up a little more, I saw that the myth-making was a cage for both of us. It bound my mother to a role of endless giving — she had to keep offering herself in order to complete the illusion in my head — and it loaded me with the weight of love&rsquo;s debt, fenced me in a moral lowland where everything had to be &ldquo;repaid.&rdquo; Who profits from chasing that kind of purity and perfection? I see her flaws, accept some of them, and forgive myself for the ones I can&rsquo;t accept. But seeing, accepting, or shrugging — none of it changes how we live together or how we hold each other up. She, in her own way, does the same: she sees me, and she lets me go. The day I understood this, I finally grew out of the role of &ldquo;child.&rdquo; We are two independent, mature people who no longer wish to change each other or hold each other tight. We can respond to and support each other — or refuse each other&rsquo;s emotions.",
+        "Inside the parent-child relationship, some learn how to be loved, some learn how to keep love going, some learn how to walk out of pain, some learn how to breathe. What I&rsquo;ve been learning is how to leave home — and then to remember those particular moments when we needed each other, and to say:"
+      ],
+      signoffZh: "母亲节快乐。",
+      signoffEn: "Happy Mother&rsquo;s Day."
+    }
+  ];
+
+  /* ───── render pages ───── */
+  const pagesEl = document.getElementById('pages');
+  if (entries.length === 0) {
+    pagesEl.innerHTML = `
+      <div class="empty-state">
+        <div class="empty-mark">·</div>
+        <p><span class="zh-only">尚未上传</span><span class="en-only">Nothing here yet</span></p>
+      </div>
+    `;
+  } else {
+    entries.forEach((e, i) => {
+      const node = document.createElement("article");
+      node.className = `page m-${e.type} reveal`;
+      if (e.type === "essay") {
+        const bodyZh = e.bodyZh.map(p => `<p>${p}</p>`).join("");
+        const bodyEn = e.bodyEn.map(p => `<p>${p}</p>`).join("");
+        node.innerHTML = `
+          <span class="page-date">${e.date}</span>
+          <span class="page-mark">${e.mark}</span>
+          <h2 class="essay-title zh-only">${e.titleZh}</h2>
+          <div class="essay-title-en">${e.titleEn}</div>
+          <div class="body">
+            <div class="zh-only">${bodyZh}</div>
+            <div class="en-only">${bodyEn}</div>
+          </div>
+          <span class="signoff"><span class="zh-only">${e.signoffZh}</span><span class="en-only">${e.signoffEn}</span></span>
+        `;
+      }
+      pagesEl.appendChild(node);
+    });
+  }
+
   /* ───── nav scroll behavior ───── */
   const nav = document.getElementById('nav');
   let lastY = 0; let ticking = false;
