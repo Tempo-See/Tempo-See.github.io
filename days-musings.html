@@ -32,16 +32,25 @@
     --hand-2:   "Long Cang", "Noto Serif SC", cursive;
     --brush:    "Ma Shan Zheng", "Noto Serif SC", serif;
     --hand-jl:  "JingLei", "Noto Serif SC", "STKaiti", serif;
+    --hand-xs:  "XingShu", "Liu Jian Mao Cao", "Noto Serif SC", cursive;
 
     --max:  1280px;
     --gut:  clamp(20px, 4vw, 56px);
     --nav-h: 56px;
   }
 
-  /* 方正静蕾简体（子集化）— 长篇手写笔记专用 */
+  /* 方正静蕾简体 — 长篇手写笔记专用 */
   @font-face {
     font-family: "JingLei";
     src: url("fonts/jinglei.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
+  }
+  /* 方正硬笔行书 — signoff / pull-quote 专用 */
+  @font-face {
+    font-family: "XingShu";
+    src: url("fonts/xingshu.woff2") format("woff2");
     font-weight: 400;
     font-style: normal;
     font-display: swap;
@@ -350,12 +359,12 @@
   .page.m-essay .signoff {
     display: block;
     text-align: right;
-    font-family: var(--hand);
+    font-family: var(--hand-xs);
     color: var(--accent);
-    font-size: 24px;
+    font-size: 28px;
     margin: 32px auto 0;
     max-width: 36em;
-    letter-spacing: 0.06em;
+    letter-spacing: 0.04em;
   }
   [data-lang="en"] .page.m-essay .signoff {
     font-family: var(--serif-en);

@@ -30,10 +30,20 @@
     --serif-zh: "Noto Serif SC", "Songti SC", "STSong", serif;
     --serif-en: "Cormorant Garamond", "Noto Serif SC", serif;
     --hand:     "Liu Jian Mao Cao", "Noto Serif SC", cursive;
+    --hand-xs:  "XingShu", "Liu Jian Mao Cao", "Noto Serif SC", cursive;
 
     --max:  1180px;
     --gut:  clamp(20px, 4vw, 56px);
     --nav-h: 56px;
+  }
+
+  /* 方正硬笔行书 — pull-quote 专用 */
+  @font-face {
+    font-family: "XingShu";
+    src: url("fonts/xingshu.woff2") format("woff2");
+    font-weight: 400;
+    font-style: normal;
+    font-display: swap;
   }
 
   * { box-sizing: border-box; }
@@ -378,12 +388,13 @@
   }
   .detail-prose p + p { margin-top: 1.4em; }
   .detail-prose .pull {
-    font-family: var(--hand);
-    font-size: 1.4em;
+    font-family: var(--hand-xs);
+    font-size: 1.7em;
     color: var(--accent-brown);
     line-height: 1.5;
     margin: 1.6em 0;
     text-align: center;
+    letter-spacing: 0.04em;
   }
 
   /* small accessory images on the side, escape the prose column */

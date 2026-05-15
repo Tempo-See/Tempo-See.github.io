@@ -26,7 +26,6 @@ _xingshu_chars.txt
 _jinglei_chars.txt
 images/_temp_*
 images/temp_rotated*
-fonts/xingshu.woff2
 
 # Source TTF fonts — only needed locally to subset; large
 *.TTF
