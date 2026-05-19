@@ -506,6 +506,19 @@
   .d-data .lbl { color: var(--ink-faint); margin-right: 12px; }
   .d-data .row + .row { margin-top: 6px; }
 
+  /* ───────────── mode B: custom image detail (replaces the structured layout) ───────────── */
+  .detail-image-stack {
+    display: flex;
+    flex-direction: column;
+    gap: 0;
+    background: var(--paper-soft);
+  }
+  .detail-image-stack img {
+    width: 100%;
+    height: auto;
+    display: block;
+  }
+
   /* ───────────── i18n ───────────── */
   [data-lang="zh"] .en-only { display: none; }
   [data-lang="en"] .zh-only { display: none; }
@@ -697,19 +710,10 @@
       ptypeEn: "powder",
       composition: ["沉香","檀香","鹅梨"],
       impressions: ["甜润","单薄"],
-      temp: ["熏香温度 · 110 至 130", "4 小时后扩香明显减弱"],
-      recipe: `沉香末一两，檀香末一钱，鹅梨十枚。右以鹅梨刻去瓤核，如瓮子状，入香末，仍将梨顶签盖，蒸三溜，去梨皮，研和令匀，久窨可热。`,
-      recipeSource: "陈氏香谱",
-      review: [
-        "甜润的气息似乎突然间就弥漫开来了",
-        "未见预想中的凉意，也不至于腻人",
-        "扩香力道恰到好处",
-        "床帏被甜香轻轻地包裹着",
-        { pull: "只是熏后空气中残留的甜味略显单薄" },
-        "有些遗憾",
-      ],
       tone: "warm",
-      seedA: 1, seedB: 11
+      seedA: 1, seedB: 11,
+      // — mode B: detail page = your designed image —
+      detailImages: ["images/incense/elih.jpg"],
     },
     {
       id: "qinglin",
@@ -884,6 +888,19 @@
   }
 
   function openModal(it) {
+    // — mode B: custom image stack (replaces the whole detail layout) —
+    if (Array.isArray(it.detailImages) && it.detailImages.length > 0) {
+      const imgs = it.detailImages
+        .map(src => `<img src="${src}" alt="${it.name}" />`)
+        .join("");
+      shell.innerHTML = `<div class="detail-image-stack">${imgs}</div>`;
+      modal.classList.add("open");
+      document.body.style.overflow = "hidden";
+      modal.scrollTop = 0;
+      return;
+    }
+
+    // — mode A: structured template (existing layout) —
     const brushChars = Array.from(it.name).join("<br/>");
     const sourceTxt = it.recipeSource && it.recipeSource !== "占位"
       ? `<span class="source">——〈${it.recipeSource}〉</span>` : "";
