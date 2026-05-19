@@ -507,11 +507,17 @@
   .d-data .row + .row { margin-top: 6px; }
 
   /* ───────────── mode B: custom image detail (replaces the structured layout) ───────────── */
+  /* shell becomes transparent in image mode so the modal hugs the image — no cream margin,
+     no padding. The image's own design provides the background. */
+  .modal-shell.image-mode {
+    padding: 0;
+    background: transparent;
+    overflow: hidden;
+  }
   .detail-image-stack {
     display: flex;
     flex-direction: column;
     gap: 0;
-    background: var(--paper-soft);
   }
   .detail-image-stack img {
     width: 100%;
@@ -894,11 +900,13 @@
         .map(src => `<img src="${src}" alt="${it.name}" />`)
         .join("");
       shell.innerHTML = `<div class="detail-image-stack">${imgs}</div>`;
+      shell.classList.add("image-mode");
       modal.classList.add("open");
       document.body.style.overflow = "hidden";
       modal.scrollTop = 0;
       return;
     }
+    shell.classList.remove("image-mode");
 
     // — mode A: structured template (existing layout) —
     const brushChars = Array.from(it.name).join("<br/>");
@@ -945,7 +953,7 @@
     document.body.style.overflow = "hidden";
     modal.scrollTop = 0;
   }
-  function closeModal(){ modal.classList.remove("open"); document.body.style.overflow = ""; shell.innerHTML = ""; }
+  function closeModal(){ modal.classList.remove("open"); document.body.style.overflow = ""; shell.innerHTML = ""; shell.classList.remove("image-mode"); }
   closeBtn.addEventListener("click", closeModal);
   modal.addEventListener("click", (e) => { if (e.target === modal) closeModal(); });
   document.addEventListener("keydown", (e) => { if (e.key === "Escape") closeModal(); });
